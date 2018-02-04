@@ -6,8 +6,6 @@ import {connect} from "react-redux";
 
 export class Canister extends Component<{}> {
     render() {
-        console.log("Loading:" +this.props.loading);
-        console.log("Info:" +this.props.info);
         if (this.props.loading) {
             return(
                 <Text>Loading...</Text>
@@ -23,7 +21,9 @@ export class Canister extends Component<{}> {
                     <View style={volume_style}/>
                 </View>
                 <Text
-                    style={styles.canister_status_text}>{specific_container.name}: {specific_container.amount}mL
+                    style={styles.canister_status_text}>
+                    {specific_container.name}{'\n'}
+                    {specific_container.amount}mL
                     remaining</Text>
             </View>
         )
@@ -46,9 +46,9 @@ function mapDispatchToProps(dispatch) {
 const styles = StyleSheet.create({
 
     canister_status_text: {
-        fontSize: 50,
+        fontSize: 30,
         flex: .6,
-        paddingLeft: 10
+        paddingLeft: 10,
     },
     canister_status_view: {
         backgroundColor: 'white',

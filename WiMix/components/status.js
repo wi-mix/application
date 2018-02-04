@@ -8,10 +8,14 @@ import {connect} from "react-redux";
 const num_canisters = 3;
 
 export class Status extends Component<{}> {
+    static navigationOptions ={
+        title:"Canister Status"
+    };
     componentDidMount(){
         this.props.loadStatus();
     }
     render() {
+        const {navigate} = this.props.navigation;
         const canisters = (() => {
             var render = [];
             for (i = 0; i < num_canisters; i++) {
@@ -23,12 +27,15 @@ export class Status extends Component<{}> {
             {canisters}
             <TouchableOpacity
                 style={styles.start_recipe_button}
-                onPress={this.props.fetchData}>
-                <Text style={styles.start_recipe_text}>{this.props.isLoading}</Text>
+                onPress={()=>navigate('Recipes')}>
+                <Text style={styles.start_recipe_text}>
+                    Choose A Recipe!
+                </Text>
             </TouchableOpacity>
         </View>)
     }
 }
+
 
 const mapDispatchToProps = (dispatch) => {
     return {
@@ -37,7 +44,7 @@ const mapDispatchToProps = (dispatch) => {
 };
 const mapStateToProps = (state) =>{
     return {
-        isLoading:state.loading
+        isLoading:state.canisterStatusReducer.loading
     };
 };
 

@@ -4,7 +4,6 @@ let canisterStatus = {status:[],loading:true};
 const canisterStatusReducer = (state = canisterStatus,action)=>{
     switch(action.type){
         case UPDATE_CANISTER_SUCCESS:
-            console.log(action.status);
             return Object.assign({},state,{
                 status: action.status, loading:false
             });

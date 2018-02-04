@@ -33,6 +33,6 @@ export function updateCanisters() {
         dispatch(updatingCanisters(true));
         setTimeout(() => {
             dispatch(updateCanisterSuccess(fake_data));
-        }, 5000);
+        }, 1000);
     };
 }
