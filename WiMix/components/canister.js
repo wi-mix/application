@@ -6,6 +6,7 @@ import {connect} from "react-redux";
 
 export class Canister extends Component<{}> {
     render() {
+        // If data is still being retrieved from the base station, indicate loading
         if (this.props.loading) {
             return(
                 <Text>Loading...</Text>
@@ -13,7 +14,7 @@ export class Canister extends Component<{}> {
         }
         let specific_container = this.props.info[this.props.index];
 
-
+        // Render canister data, including visualization of volume, fluid name, and volume present
         let volume_style = {backgroundColor: 'green', flex: specific_container.amount / 1000};
         return (
             <View style={styles.canister_status_view}>
@@ -29,14 +30,14 @@ export class Canister extends Component<{}> {
         )
     }
 }
-
+// Link component props to Redux state variables
 function mapStateToProps(state) {
     return {
         info: state.canisterStatusReducer.status,
         loading: state.canisterStatusReducer.loading
     }
 }
-
+// Link component prop to make them able to dispatch action creators
 function mapDispatchToProps(dispatch) {
     return {
         fetchData: () => dispatch(updateCanisters())
@@ -57,4 +58,5 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     }
 });
+// Invoke links between component and Redux store
 export default connect(mapStateToProps,mapDispatchToProps)(Canister);

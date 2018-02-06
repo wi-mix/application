@@ -4,6 +4,7 @@ import rootReducer from '../reducers';
 export default function configureStore() {
     return createStore(
         rootReducer,
+        // Use thunk for asynchronous actions
         applyMiddleware(thunk)
     );
 }

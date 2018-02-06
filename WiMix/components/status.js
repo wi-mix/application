@@ -4,10 +4,11 @@ import React from "react";
 import Canister from "./canister";
 import {updateCanisters} from "../actions";
 import {connect} from "react-redux";
-
+// This is dependent on the hardware this app is intended to interface with
 const num_canisters = 3;
 
 export class Status extends Component<{}> {
+    // Title of this screen
     static navigationOptions ={
         title:"Canister Status"
     };
@@ -16,6 +17,7 @@ export class Status extends Component<{}> {
     }
     render() {
         const {navigate} = this.props.navigation;
+        // Render a canister view for each canister
         const canisters = (() => {
             var render = [];
             for (i = 0; i < num_canisters; i++) {
@@ -23,6 +25,7 @@ export class Status extends Component<{}> {
             }
             return render;
         })();
+        // Render the canisters and a button to navigate to recipe selection
         return (<View style={styles.container}>
             {canisters}
             <TouchableOpacity
@@ -37,17 +40,20 @@ export class Status extends Component<{}> {
 }
 
 
+// Link component prop to make them able to dispatch action creators
 const mapDispatchToProps = (dispatch) => {
     return {
         loadStatus: () => dispatch(updateCanisters())
     };
 };
+
+// Link component props to Redux state variables
 const mapStateToProps = (state) =>{
     return {
         isLoading:state.canisterStatusReducer.loading
     };
 };
-
+// Invoke links between component and Redux store
 export default connect(mapStateToProps,mapDispatchToProps)(Status);
 
 const styles = StyleSheet.create({

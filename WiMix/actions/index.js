@@ -13,14 +13,14 @@ const fake_data = [{
     'name': 'ammonia',
     'amount': 100
 }];
-
+// Action to create when triggering canister data update
 export function updatingCanisters(loading) {
     return {
         type: UPDATE_CANISTERS,
         loading
     };
 }
-
+// Action to indicate the canister data has completed loading
 export function updateCanisterSuccess(status) {
     return {
         type: UPDATE_CANISTER_SUCCESS,
@@ -28,6 +28,7 @@ export function updateCanisterSuccess(status) {
     };
 }
 
+// Method to start canister update
 export function updateCanisters() {
     return (dispatch) => {
         dispatch(updatingCanisters(true));
