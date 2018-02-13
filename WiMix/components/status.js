@@ -12,7 +12,8 @@ export class Status extends Component<{}> {
     static navigationOptions ={
         title:"Canister Status"
     };
-    componentDidMount(){
+    constructor(props){
+        super(props);
         this.props.loadStatus();
     }
     render() {
@@ -50,7 +51,7 @@ const mapDispatchToProps = (dispatch) => {
 // Link component props to Redux state variables
 const mapStateToProps = (state) =>{
     return {
-        isLoading:state.canisterStatusReducer.loading
+        isLoading:state.canisterStatusReducer.canisterLoading
     };
 };
 // Invoke links between component and Redux store

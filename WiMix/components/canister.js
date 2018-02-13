@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 export class Canister extends Component<{}> {
     render() {
         // If data is still being retrieved from the base station, indicate loading
-        if (this.props.loading) {
+        if (this.props.isLoading) {
             return(
                 <Text>Loading...</Text>
             )
@@ -34,7 +34,7 @@ export class Canister extends Component<{}> {
 function mapStateToProps(state) {
     return {
         info: state.canisterStatusReducer.status,
-        loading: state.canisterStatusReducer.loading
+        isLoading: state.canisterStatusReducer.canisterLoading
     }
 }
 // Link component prop to make them able to dispatch action creators

@@ -1,6 +1,6 @@
 import {StackNavigator} from "react-navigation";
 import Status from "./components/status";
-import RecipeSelection from "./components/recipe"
+import RecipeSelection from "./components/recipe_selection"
 import React from "react";
 
 // List all separate screens used within the app so they can be navigated to
