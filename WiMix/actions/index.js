@@ -17,52 +17,6 @@ const fake_status_data = [{
     'amount': 100
 }];
 
-const fake_recipe_data = [{
-    'id':1,
-    'name':'fun drink',
-    'description':'The really really really really good stuff',
-    'ingredients':[{
-        'id':10,
-        'name':'bleach',
-        'ZobristKey':101,
-        'amount':50
-    },{
-        'id':11,
-        'name':'water',
-        'ZobristKey':102,
-        'amount':40
-    },{
-        'id':12,
-        'name':'ammonia',
-        'ZobristKey':103,
-        'amount':30
-    }],
-    'ordered':false
-},
-    {
-        'id':2,
-        'name':'mediocre drink',
-        'description':'The ok stuff',
-        'ingredients':[{
-            'id':10,
-            'name':'bleach',
-            'ZobristKey':101,
-            'amount':200
-        }],
-        'ordered':false
-    },
-    {
-    'id':3,
-    'name':'lame drink',
-    'description':'The bad stuff',
-    'ingredients':[{
-        'id':11,
-        'name':'water',
-        'ZobristKey':102,
-        'amount':100
-    }],
-    'ordered':false
-}];
 
 // Action to create when triggering canister data update
 export function updatingCanister(loading) {
@@ -97,16 +51,9 @@ export function makeRecipe(recipe){
 export function getRecipes(){
     return (dispatch) =>{
         dispatch(updatingRecipe(true));
-        // React insists that rendered array items have a "key" property
-        let keyed_recipe_data = fake_recipe_data.map(recipe=>{
-            recipe.key = recipe.id;
-            recipe.ingredients.map(ingredient=>{
-                ingredient.key = ingredient.id;
-                return ingredient;
-            })
-            return recipe
-        });
-        dispatch(getRecipeSuccess(keyed_recipe_data))
+        fetch('http://comp466rhuard.azurewebsites.net/api/recipes/drinks')
+            .then(response=>response.json())
+            .then(recipe_json=>dispatch(getRecipeSuccess(recipe_json)));
     }
 }
 

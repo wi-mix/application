@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     },
     canister_status_view: {
         backgroundColor: 'white',
-        margin: 10,
+        marginTop: 10,
+        marginBottom: 10,
         flex: 1,
         flexDirection: 'row'
     }

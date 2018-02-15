@@ -6,13 +6,13 @@ import {Ingredient} from "./ingredient";
 export class Recipe extends Component<{}> {
     render() {
         console.log(this.props.data);
-        const ingredient_list = (() => {
-            let render = [];
-            this.props.data.ingredients.forEach((ingredient) => {
-                render.push(<Ingredient key={ingredient.key} name={ingredient.name} amount={ingredient.amount}/>)
-            });
-            return render;
-        })();
+        // const ingredient_list = (() => {
+        //     let render = [];
+        //     this.props.data.ingredients.forEach((ingredient) => {
+        //         render.push(<Ingredient key={ingredient.key} name={ingredient.name} amount={ingredient.amount}/>)
+        //     });
+        //     return render;
+        // })();
         return <View style={styles.recipe_card}>
             <View style = {styles.recipe_info_view}>
                 <Text style = {styles.recipe_info}>
@@ -22,21 +22,22 @@ export class Recipe extends Component<{}> {
                 {this.props.data.description}
                 </Text>
             </View>
-            <View style={styles.recipe_contents}>
-                {ingredient_list}
-            </View>
+            {/*<View style={styles.recipe_contents}>*/}
+                {/*{ingredient_list}*/}
+            {/*</View>*/}
         </View>
     }
 }
 
 const styles = StyleSheet.create({
     recipe_info_view:{
-        flex:3,
+        flex:1,
         flexDirection:'row'
     },
     recipe_card: {
         backgroundColor: 'white',
-        margin: 10,
+        marginTop: 10,
+        marginBottom: 10,
         flex: 1,
         height:110,
         flexDirection:'row'
