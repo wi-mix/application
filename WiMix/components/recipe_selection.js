@@ -1,9 +1,10 @@
 import {Component} from "react";
-import {getRecipes, makeRecipe} from "../actions";
 import {connect} from "react-redux";
 import React from "react";
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {Recipe} from "./recipe";
+import {Recipe_Card} from "./recipe_card";
+import FAB from 'react-native-fab';
+import {getRecipes, selectRecipe} from "../actions";
 
 export class RecipeSelection extends Component<{}> {
     static navigationOptions = {
@@ -17,6 +18,7 @@ export class RecipeSelection extends Component<{}> {
 
     // Placeholder recipes page
     render() {
+        const {navigate} = this.props.navigation;
         // If data is still being retrieved from the base station, indicate loading
         if (this.props.isLoading) {
             return (
@@ -24,30 +26,21 @@ export class RecipeSelection extends Component<{}> {
             )
         }
         console.log(this.props.canisterIsLoading);
-        let navigation = this.props.navigation;
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
                     <FlatList
                         data={this.props.recipes}
-                        renderItem={({item}) => <Recipe data={item}/>
+                        renderItem={({item}) =>
+                            <TouchableOpacity
+                                onPress={()=>{
+                                    this.props.selectRecipe({item});
+                                    navigate('Recipe');
+                                }}><Recipe_Card data={item}/></TouchableOpacity>
                         }
                     />
                 </View>
-                <View style={styles.custom_recipe}>
-                    <Text style={{fontSize:40,alignItems:'center'}}>Make your own recipe! Coming soon</Text>
-                </View>
-                <TouchableOpacity
-                    style={styles.start_recipe_button}
-                    onPress={() => {
-                        makeRecipe(this.props.recipes[0]);
-                        navigation.goBack(navigation.state.key);
-                    }}
-                >
-                    <Text style={styles.start_recipe_text}>
-                        Start The Recipe!
-                    </Text>
-                </TouchableOpacity>
+                <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {navigate('Recipe')}} visible={true} />
             </View>
         )
     }
@@ -57,7 +50,7 @@ export class RecipeSelection extends Component<{}> {
 const mapDispatchToProps = (dispatch) => {
     return {
         loadRecipes: () => dispatch(getRecipes()),
-        makeRecipe: (recipe) => dispatch(makeRecipe(recipe))
+        selectRecipe:(recipe) => dispatch(selectRecipe(recipe))
     };
 };
 
@@ -71,6 +64,7 @@ const mapStateToProps = (state) => {
 };
 // Invoke links between component and Redux store
 export default connect(mapStateToProps, mapDispatchToProps)(RecipeSelection);
+
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
@@ -85,14 +79,5 @@ const styles = StyleSheet.create({
     },
     server_recipe_list: {
         flex: 3,
-    },
-    start_recipe_button: {
-        height: 60,
-        backgroundColor: 'green',
-        marginBottom: 5,
-    },
-    start_recipe_text: {
-        textAlign: 'center',
-        fontSize: 40,
     }
 });

@@ -2,6 +2,8 @@ export const CANISTER_UPDATING = 'CANISTER_UPDATING';
 export const RECIPE_UPDATING = 'RECIPE_UPDATING';
 export const UPDATE_CANISTER_SUCCESS = 'UPDATE_CANISTER_SUCCESS';
 export const GET_RECIPE_SUCCESS = 'GET_RECIPE_SUCCESS';
+export const RECIPE_SELECTED = 'RECIPE_SELECTED';
+export const MAKE_RECIPE = 'MAKE_RECIPE';
 
 const fake_status_data = [{
     'id': 10,
@@ -17,6 +19,12 @@ const fake_status_data = [{
     'amount': 100
 }];
 
+export function selectRecipe(recipe) {
+    return {
+        type:RECIPE_SELECTED,
+        recipe
+    }
+}
 
 // Action to create when triggering canister data update
 export function updatingCanister(loading) {
@@ -46,7 +54,10 @@ export function getRecipeSuccess(recipes){
     }
 }
 export function makeRecipe(recipe){
-    console.log("Requesting recipe creation for "+recipe.name);
+    return {
+        type:MAKE_RECIPE,
+        recipe
+    }
 }
 export function getRecipes(){
     return (dispatch) =>{

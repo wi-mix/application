@@ -1,56 +1,79 @@
 import {Component} from "react";
-import {StyleSheet, Text, View} from "react-native";
+import {makeRecipe} from "../actions";
+import {connect} from "react-redux";
 import React from "react";
+import {View, StyleSheet, TouchableOpacity, Text} from "react-native";
 import {Ingredient} from "./ingredient";
 
 export class Recipe extends Component<{}> {
     render() {
-        console.log(this.props.data);
-        // const ingredient_list = (() => {
-        //     let render = [];
-        //     this.props.data.ingredients.forEach((ingredient) => {
-        //         render.push(<Ingredient key={ingredient.key} name={ingredient.name} amount={ingredient.amount}/>)
-        //     });
-        //     return render;
-        // })();
-        return <View style={styles.recipe_card}>
-            <View style = {styles.recipe_info_view}>
-                <Text style = {styles.recipe_info}>
-                    <Text style = {{fontWeight:'bold'}}>
-                    {this.props.data.name}{'\n'}
-                    </Text>
-                {this.props.data.description}
-                </Text>
+        if (this.props.recipe == null) {
+            return <Text>Make a custom drink!</Text>
+        }
+        let ingredient_list = (() => {
+            let render = [];
+            this.props.recipe.ingredients.forEach((ingredient) => {
+                render.push(<Ingredient key={ingredient.key} name={ingredient.name} amount={ingredient.amount}/>)
+            });
+            return render;
+        })();
+        return <View style={styles.container}>
+            <View style={styles.recipe_info_view}>
+                <Text style={styles.recipe_info}><Text style={{fontWeight:'bold'}}>{this.props.recipe.name}</Text>{'\n'}{this.props.recipe.description}</Text>
             </View>
-            {/*<View style={styles.recipe_contents}>*/}
-                {/*{ingredient_list}*/}
-            {/*</View>*/}
-        </View>
+            <View style={styles.recipe_contents}>
+                {ingredient_list}
+            </View>
+            <TouchableOpacity
+                style={styles.make_recipe_button}
+                onPress={() => {
+                    this.props.makeRecipe(this.props.recipe);
+                    this.props.navigation.popToTop();
+                }}>
+                <Text style={styles.make_recipe_button_text}>Make it!</Text>
+            </TouchableOpacity></View>
+
     }
 }
 
+const mapDispatchToProps = (dispatch) => {
+    return {
+        makeRecipe: (recipe) => dispatch(makeRecipe(recipe))
+    };
+};
+
+const mapStateToProps = (state) => {
+    return {
+        recipe: state.recipeReducer.selected,
+    };
+};
 const styles = StyleSheet.create({
-    recipe_info_view:{
-        flex:1,
-        flexDirection:'row'
-    },
-    recipe_card: {
-        backgroundColor: 'white',
-        marginTop: 10,
-        marginBottom: 10,
+    container: {
+        flexDirection: 'column',
         flex: 1,
-        height:110,
-        flexDirection:'row'
+        backgroundColor: 'grey'
     },
-    recipe_info:{
-        fontSize:20,
-        margin:5,
+    recipe_info_view: {
+        flex: 5,
+        backgroundColor:'white',
+        marginBottom:10
+    },
+    recipe_info: {
+        fontSize:20
+    },
+    recipe_contents: {
+        flex: 5,
+        marginBottom:10,
+        backgroundColor:'white'
+    },
+    make_recipe_button: {
         flex:1,
-        flexWrap:'wrap'
+        backgroundColor: 'white',
+        marginBottom: 5,
     },
-    recipe_contents:{
-        flex:5,
-        marginLeft:20,
-        justifyContent:'center'
+    make_recipe_button_text: {
+        textAlign: 'center',
+        fontSize: 40,
     }
 });
+export default connect(mapStateToProps, mapDispatchToProps)(Recipe);

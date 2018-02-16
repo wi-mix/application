@@ -1,5 +1,8 @@
 import { combineReducers } from 'redux';
-import {CANISTER_UPDATING, GET_RECIPE_SUCCESS, RECIPE_UPDATING, UPDATE_CANISTER_SUCCESS} from "../actions";
+import {
+    CANISTER_UPDATING, GET_RECIPE_SUCCESS, MAKE_RECIPE, RECIPE_SELECTED, RECIPE_UPDATING,
+    UPDATE_CANISTER_SUCCESS
+} from "../actions";
 let canisterStatus = {status:[],canisterLoading:true};
 const canisterStatusReducer = (state = canisterStatus,action)=>{
     switch(action.type){
@@ -30,6 +33,15 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             return Object.assign({},state,{
                 recipeLoading:true
             });
+        case RECIPE_SELECTED:
+            return Object.assign({},state,{
+               selected:state.recipes.filter(recipe=>recipe.key===action.recipe.item.key)[0]
+            });
+        case MAKE_RECIPE:
+            return Object.assign({},state,{
+                selected:null
+            });
+
         default:
             return state;
     }
