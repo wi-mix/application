@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import {
-    CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, RECIPE_SELECTED, RECIPE_UPDATING,
+    CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, RECIPE_SELECTED, RECIPE_UPDATING, SAVE_RECIPE,
+    SET_SELECTED_AMOUNT, SET_SELECTED_DESCRIPTION, SET_SELECTED_NAME,
     UPDATE_CANISTER_SUCCESS
 } from "../actions";
 /*
@@ -44,12 +45,66 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             });
         case DESELECT_RECIPE:
             return Object.assign({},state,{
-                selected:null
+                selected:{}
+            });
+        case SET_SELECTED_NAME:
+            return Object.assign({},state,{
+               selected:Object.assign({},state.selected,{
+                    name:action.name
+               })
+            });
+
+        case SET_SELECTED_DESCRIPTION:
+            return Object.assign({},state,{
+                selected:Object.assign({},state.selected,{
+                    description:action.description
+                })
+            });
+
+        case SET_SELECTED_AMOUNT:
+            let updated_ingredient = Object.assign({},action.ingredient,{
+                amount:action.amount
+            });
+            if(state.selected['ingredients'] == null){
+                return Object.assign({},state,{
+                    selected:Object.assign({},state.selected,{
+                        ingredients:[updated_ingredient]
+                    })
+                });
+            }
+            // If ingredient is already present update its amount
+            else if (state.selected.ingredients.some(ingredient=>ingredient.key === updated_ingredient.key)){
+                return Object.assign({},state,{
+                    selected:Object.assign({},state.selected,{
+                        ingredients:state.selected.ingredients.map(ingredient=>{
+                        if(ingredient.key === updated_ingredient.key){
+                            return Object.assign({},ingredient,{
+                              amount:action.amount
+                            });
+                        }
+                        return ingredient
+                        })
+                    })
+                })
+             // Otherwise this is a new ingredient to add
+            } else{
+                return Object.assign({},state,{
+                    selected:Object.assign({},state.selected,{
+                        ingredients:[...state.selected.ingredients,updated_ingredient]
+                    })
+                })
+            }
+
+        case SAVE_RECIPE:
+            let keyed_recipe = action.recipe;
+            keyed_recipe.key = state.recipes.length +1;
+            return Object.assign({},state,{
+                recipes:[...state.recipes,keyed_recipe]
             });
         default:
             return state;
     }
-}
+};
 
 export default combineReducers({
     canisterStatusReducer,

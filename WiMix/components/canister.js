@@ -4,6 +4,7 @@ import React from "react";
 import {updateCanisters} from "../actions";
 import {connect} from "react-redux";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
+import {AppText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -26,11 +27,11 @@ export class Canister extends Component<{}> {
                 <View style={{flex: .3, flexDirection: 'column-reverse'}}>
                     <View style={volume_style}/>
                 </View>
-                <Text
+                <AppText
                     style={styles.recipe_info_text}>
                     {specific_container.name}{'\n'}
                     {specific_container.amount}mL
-                    remaining</Text>
+                    remaining</AppText>
             </View>
         )
     }
@@ -50,7 +51,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 const styles = StyleSheet.create({
-
     recipe_info_text: {
         fontSize: responsiveFontSize(5),
         flex: .6,

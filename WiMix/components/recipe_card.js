@@ -2,6 +2,7 @@ import {Component} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
+import {AppText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -12,9 +13,9 @@ export class Recipe_Card extends Component<{}> {
     render() {
         return <View style={styles.recipe_card}>
             <View style = {styles.recipe_info_view}>
-                <Text style = {styles.recipe_info}>
+                <AppText style = {styles.recipe_info}>
                     {this.props.data.name}
-                </Text>
+                </AppText>
             </View>
 
         </View>

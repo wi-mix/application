@@ -4,7 +4,7 @@ import React from "react";
 import Canister from "./canister";
 import {updateCanisters} from "../actions";
 import {connect} from "react-redux";
-import {responsiveFontSize} from "react-native-responsive-dimensions";
+import {WiMixButtonText, WiMixText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -42,9 +42,9 @@ export class Status extends Component<{}> {
             <TouchableOpacity
                 style={styles.select_recipe_button}
                 onPress={() => navigate('RecipeSelection')}>
-                <Text style={styles.select_recipe_text}>
+                <WiMixButtonText>
                     Choose A Recipe!
-                </Text>
+                </WiMixButtonText>
             </TouchableOpacity>
         </View>)
     }
@@ -84,9 +84,6 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginBottom: 5,
     },
-    select_recipe_text: {
-        textAlign: 'center',
-        fontSize: responsiveFontSize(5),
-    }
+
 });
 

@@ -16,7 +16,10 @@ export class RecipeSelection extends Component<{}> {
     };
     constructor(props) {
         super(props);
-        this.props.loadRecipes();
+        if(!this.props.recipes){
+            console.log("Loading recipes");
+            this.props.loadRecipes(this.props.available.map(ingredient=>ingredient.zobristKey));
+        }
     }
 
     // Placeholder recipes page
@@ -28,12 +31,11 @@ export class RecipeSelection extends Component<{}> {
                 <Text>Loading...</Text>
             )
         }
-        let usable_recipes = this.props.recipes.filter(recipe=>recipe.ingredients.every(ingredient=>this.props.available.some((avail)=>avail.key === ingredient.key)));
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
                     <FlatList
-                        data={usable_recipes}
+                        data={this.props.recipes}
                         renderItem={({item}) =>
                             <TouchableOpacity
                                 onPress={()=>{
@@ -56,7 +58,7 @@ export class RecipeSelection extends Component<{}> {
 const mapDispatchToProps = (dispatch) => {
     return {
         clearRecipeSelection:()=>dispatch(clearRecipe()),
-        loadRecipes: () => dispatch(getRecipes()),
+        loadRecipes: (keys) => dispatch(getRecipes(keys)),
         selectRecipe:(recipe) => dispatch(selectRecipe(recipe))
     };
 };

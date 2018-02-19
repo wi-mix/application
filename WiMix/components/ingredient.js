@@ -1,7 +1,10 @@
 import {Component} from "react";
 import React from "react";
-import {StyleSheet, Text, View, PanResponder} from "react-native";
+import {StyleSheet, View, PanResponder} from "react-native";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
+import {AppText} from "./wimix_text";
+import {connect} from "react-redux";
+import {setCustomRecipeAmount} from "../actions";
 
 /*
     Author: Harley Vanselow
@@ -11,8 +14,9 @@ import {responsiveFontSize} from "react-native-responsive-dimensions";
 export class Ingredient extends Component<{}> {
     constructor(props) {
         super(props);
-        this.state = {required: props.editable?0:this.props.amount_required}
+        this.state = {required: props.editable ? 0 : this.props.ingredient.amount}
     }
+
     componentWillMount() {
         // Controls how sensitive the touch controls on the customizable volume are
         const volume_control_sensitivity = 500;
@@ -25,37 +29,48 @@ export class Ingredient extends Component<{}> {
                     return {last_position: evt.nativeEvent.pageY};
                 });
             },
-            onPanResponderMove: (evt,gestureState)=>{
-                let change = (this.state.last_position - gestureState.moveY)/volume_control_sensitivity* this.props.total_amount;
+            onPanResponderMove: (evt, gestureState) => {
+                let change = (this.state.last_position - gestureState.moveY) / volume_control_sensitivity * this.props.ingredient.amount;
                 let new_required = this.state.required += change;
-
-                if(new_required < 0 ) new_required = 0;
-                if(new_required > this.props.total_amount) new_required = this.props.total_amount;
+                if (new_required < 0) new_required = 0;
+                if (new_required > this.props.ingredient.amount) new_required = this.props.ingredient.amount;
+                this.props.updateAmount(new_required,this.props.ingredient);
                 this.setState(prev => {
-                    return {required: new_required, last_position:gestureState.moveY};
+                    return {required: new_required, last_position: gestureState.moveY};
                 });
-            }
+            },
         })
-
     }
 
     render() {
         let volume_style = {backgroundColor: 'red', flex: this.state.required / this.props.total_amount};
         return <View style={styles.canister_status_view}>
-            <Text
+            <AppText
                 style={styles.recipe_info_text}>
-                {this.props.name}{'\n'}
+                {this.props.ingredient.name}{'\n'}
                 {Math.round(this.state.required)}mL / {this.props.total_amount}mL remaining
-                required</Text>
+                required</AppText>
             <View style={styles.volume_indicator_container}{...this._panResponder.panHandlers}>
                 <View style={volume_style}/>
-                <View position={'absolute'} style={styles.amount_required_view}><Text
-                    style={{color: 'white'}}>{Math.round(this.state.required)}mL</Text></View>
-
+                <View position={'absolute'} style={styles.amount_required_view}><AppText
+                    style={{color: 'white'}}>{Math.round(this.state.required)}mL</AppText></View>
             </View>
         </View>
     }
 }
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        updateAmount: (amount,ingredient) => dispatch(setCustomRecipeAmount(amount,ingredient))
+    };
+};
+
+const mapStateToProps = (state) => {
+    return {
+        recipe: state.recipeReducer.selected
+    };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Ingredient);
 
 const styles = StyleSheet.create({
     amount_required_view: {

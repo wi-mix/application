@@ -1,45 +1,49 @@
 import {Component} from "react";
-import {makeRecipe} from "../actions";
+import {makeRecipe, saveRecipe, setCustomRecipeDescription, setCustomRecipeName} from "../actions";
 import {connect} from "react-redux";
 import React from "react";
 import {View, StyleSheet, TouchableOpacity, Text, TextInput} from "react-native";
-import {Ingredient} from "./ingredient";
+import Ingredient from "./ingredient";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
+import {WiMixButtonText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
     Course: CMPUT 492
  */
 export class Recipe extends Component<{}> {
+    constructor(props){
+        super(props);
+        this.state = {editable:Object.keys(this.props.recipe).length === 0};
+    }
     render() {
-        let editable = this.props.recipe == null;
+        console.log("rendering recipe");
         let ingredient_list = (() => {
             let render = [];
-            if (!editable) {
+            if (!this.state.editable) {
                 this.props.recipe.ingredients.forEach((ingredient) => {
                     let available_ingredient = this.props.available.filter(available_ingredient=>ingredient.key === available_ingredient.key)[0];
                     render.push(<Ingredient
-                        key={ingredient.key}
-                        name={ingredient.name}
-                        amount_required={ingredient.amount}
+                        ingredient = {ingredient}
+                        key = {ingredient.key}
                         total_amount={available_ingredient.amount}
                         editable={false}/>)
                 });
             } else {
                 this.props.available.forEach((ingredient)=>{
-                    render.push(<Ingredient key = {ingredient.key} name = {ingredient.name} total_amount={ingredient.amount} editable={true}/>)
+                    render.push(<Ingredient ingredient = {ingredient} total_amount={ingredient.amount} key={ingredient.key} editable={true}/>)
                 });
             }
             return render;
         })();
-        let recipe_name = editable?"Name it!":this.props.recipe.name;
-        let recipe_description = editable?"Describe it!":this.props.recipe.description;
-        let textColor = editable?'grey':'black';
+        let recipe_name = this.state.editable?"Name it!":this.props.recipe.name;
+        let recipe_description = this.state.editable?"Describe it!":this.props.recipe.description;
+        let textColor = this.state.editable?'grey':'black';
 
         return <View style={styles.container}>
             <View style={styles.recipe_info_view}>
-                <TextInput style={styles.recipe_name} editable={editable} placeholder={recipe_name} placeholderTextColor={textColor}/>
-                <TextInput style={styles.recipe_description} editable={editable} multiline={true} placeholder={recipe_description} placeholderTextColor={textColor}/>
+                <TextInput style={styles.recipe_name} editable={this.state.editable} placeholder={recipe_name} placeholderTextColor={textColor} onChangeText={(text)=>this.props.updateName(text)}/>
+                <TextInput style={styles.recipe_description} editable={this.state.editable} multiline={true} placeholder={recipe_description} placeholderTextColor={textColor} onChangeText={(text)=>this.props.updateDescription(text)}/>
             </View>
             <View style={styles.recipe_contents}>
                 {ingredient_list}
@@ -47,10 +51,14 @@ export class Recipe extends Component<{}> {
             <TouchableOpacity
                 style={styles.make_recipe_button}
                 onPress={() => {
+                    if(this.state.editable){
+                        console.log(this.props.recipe);
+                        this.props.saveNewRecipe(this.props.recipe);
+                    }
                     this.props.makeRecipe(this.props.recipe);
                     this.props.navigation.popToTop();
                 }}>
-                <Text style={styles.make_recipe_button_text}>Make it!</Text>
+                <WiMixButtonText>Make it!</WiMixButtonText>
             </TouchableOpacity></View>
 
     }
@@ -59,7 +67,10 @@ export class Recipe extends Component<{}> {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        makeRecipe: (recipe) => dispatch(makeRecipe(recipe))
+        updateName: (name) => dispatch(setCustomRecipeName(name)),
+        updateDescription: (desc) => dispatch(setCustomRecipeDescription(desc)),
+        makeRecipe: (recipe) => dispatch(makeRecipe(recipe)),
+        saveNewRecipe: (recipe)=> dispatch(saveRecipe(recipe))
     };
 };
 
@@ -69,6 +80,8 @@ const mapStateToProps = (state) => {
         available: state.canisterStatusReducer.status
     };
 };
+export default connect(mapStateToProps, mapDispatchToProps)(Recipe);
+
 const styles = StyleSheet.create({
     container: {
         flexDirection: 'column',
@@ -107,4 +120,3 @@ const styles = StyleSheet.create({
         fontSize: responsiveFontSize(5),
     }
 });
-export default connect(mapStateToProps, mapDispatchToProps)(Recipe);
