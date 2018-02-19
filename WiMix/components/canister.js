@@ -3,7 +3,12 @@ import {StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {updateCanisters} from "../actions";
 import {connect} from "react-redux";
-
+import {responsiveFontSize} from "react-native-responsive-dimensions";
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
 export class Canister extends Component<{}> {
     render() {
         // If data is still being retrieved from the base station, indicate loading
@@ -22,7 +27,7 @@ export class Canister extends Component<{}> {
                     <View style={volume_style}/>
                 </View>
                 <Text
-                    style={styles.canister_status_text}>
+                    style={styles.recipe_info_text}>
                     {specific_container.name}{'\n'}
                     {specific_container.amount}mL
                     remaining</Text>
@@ -46,8 +51,8 @@ function mapDispatchToProps(dispatch) {
 
 const styles = StyleSheet.create({
 
-    canister_status_text: {
-        fontSize: 30,
+    recipe_info_text: {
+        fontSize: responsiveFontSize(5),
         flex: .6,
         paddingLeft: 10,
     },

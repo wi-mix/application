@@ -3,25 +3,28 @@ export const RECIPE_UPDATING = 'RECIPE_UPDATING';
 export const UPDATE_CANISTER_SUCCESS = 'UPDATE_CANISTER_SUCCESS';
 export const GET_RECIPE_SUCCESS = 'GET_RECIPE_SUCCESS';
 export const RECIPE_SELECTED = 'RECIPE_SELECTED';
-export const MAKE_RECIPE = 'MAKE_RECIPE';
+// export const MAKE_RECIPE = 'MAKE_RECIPE';
+export const DESELECT_RECIPE = 'DESELECT_RECIPE';
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
+const fake_status_data = [
+    {"amount":200,"order":0,"name":"Vodka","description":"Clear and tasteless","key":71,"zobristKey":7928953673119722687},
+    {"amount":100,"order":0,"name":"Lime Juice","description":"","key":90,"zobristKey":-2205514147362180360},
+    {"amount":120,"order":0,"name":"Lemon Lime Soda","description":"","key":66,"zobristKey":-3458659697403095153}];
 
-const fake_status_data = [{
-    'id': 10,
-    'name': 'bleach',
-    'amount': 200
-}, {
-    'id': 11,
-    'name': 'water',
-    'amount': 700
-}, {
-    'id': 12,
-    'name': 'ammonia',
-    'amount': 100
-}];
+export function clearRecipe() {
+    return {
+        type: DESELECT_RECIPE
+    }
+}
+
 
 export function selectRecipe(recipe) {
     return {
-        type:RECIPE_SELECTED,
+        type: RECIPE_SELECTED,
         recipe
     }
 }
@@ -33,12 +36,14 @@ export function updatingCanister(loading) {
         loading
     };
 }
+
 export function updatingRecipe(loading) {
     return {
         type: RECIPE_UPDATING,
         loading
     };
 }
+
 // Action to indicate the canister data has completed loading
 export function updateCanisterSuccess(status) {
     return {
@@ -47,24 +52,29 @@ export function updateCanisterSuccess(status) {
     };
 }
 
-export function getRecipeSuccess(recipes){
+export function getRecipeSuccess(recipes) {
     return {
         type: GET_RECIPE_SUCCESS,
         recipes
     }
 }
-export function makeRecipe(recipe){
-    return {
-        type:MAKE_RECIPE,
-        recipe
+
+export function makeRecipe(recipe) {
+    return (dispatch) => {
+        dispatch(clearRecipe());
     }
+    // return {
+    //     type:MAKE_RECIPE,
+    //     recipe
+    // }
 }
-export function getRecipes(){
-    return (dispatch) =>{
+
+export function getRecipes() {
+    return (dispatch) => {
         dispatch(updatingRecipe(true));
-        fetch('http://comp466rhuard.azurewebsites.net/api/recipes/drinks')
-            .then(response=>response.json())
-            .then(recipe_json=>dispatch(getRecipeSuccess(recipe_json)));
+        fetch('http://wimix.tech/api/recipes/drinks')
+            .then(response => response.json())
+            .then(recipe_json => dispatch(getRecipeSuccess(recipe_json)));
     }
 }
 
@@ -72,8 +82,6 @@ export function getRecipes(){
 export function updateCanisters() {
     return (dispatch) => {
         dispatch(updatingCanister(true));
-        setTimeout(() => {
-            dispatch(updateCanisterSuccess(fake_status_data));
-        }, 1000);
+        dispatch(updateCanisterSuccess(fake_status_data));
     };
 }

@@ -4,13 +4,16 @@ import React from "react";
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Recipe_Card} from "./recipe_card";
 import FAB from 'react-native-fab';
-import {getRecipes, selectRecipe} from "../actions";
-
+import {clearRecipe, getRecipes, selectRecipe} from "../actions";
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
 export class RecipeSelection extends Component<{}> {
     static navigationOptions = {
         title: "Recipe Selection"
     };
-
     constructor(props) {
         super(props);
         this.props.loadRecipes();
@@ -25,12 +28,12 @@ export class RecipeSelection extends Component<{}> {
                 <Text>Loading...</Text>
             )
         }
-        console.log(this.props.canisterIsLoading);
+        let usable_recipes = this.props.recipes.filter(recipe=>recipe.ingredients.every(ingredient=>this.props.available.some((avail)=>avail.key === ingredient.key)));
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
                     <FlatList
-                        data={this.props.recipes}
+                        data={usable_recipes}
                         renderItem={({item}) =>
                             <TouchableOpacity
                                 onPress={()=>{
@@ -40,7 +43,10 @@ export class RecipeSelection extends Component<{}> {
                         }
                     />
                 </View>
-                <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {navigate('Recipe')}} visible={true} />
+                <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {
+                    this.props.clearRecipeSelection();
+                    navigate('Recipe')
+                }} visible={true} />
             </View>
         )
     }
@@ -49,6 +55,7 @@ export class RecipeSelection extends Component<{}> {
 // Link component prop to make them able to dispatch action creators
 const mapDispatchToProps = (dispatch) => {
     return {
+        clearRecipeSelection:()=>dispatch(clearRecipe()),
         loadRecipes: () => dispatch(getRecipes()),
         selectRecipe:(recipe) => dispatch(selectRecipe(recipe))
     };
@@ -59,7 +66,8 @@ const mapStateToProps = (state) => {
     return {
         recipes: state.recipeReducer.recipes,
         isLoading: state.recipeReducer.recipeLoading,
-        canisterIsLoading: state.canisterStatusReducer.canisterLoading
+        canisterIsLoading: state.canisterStatusReducer.canisterLoading,
+        available: state.canisterStatusReducer.status
     };
 };
 // Invoke links between component and Redux store

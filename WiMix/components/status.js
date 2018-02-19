@@ -4,6 +4,12 @@ import React from "react";
 import Canister from "./canister";
 import {updateCanisters} from "../actions";
 import {connect} from "react-redux";
+import {responsiveFontSize} from "react-native-responsive-dimensions";
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
 // This is dependent on the hardware this app is intended to interface with
 const num_canisters = 3;
 
@@ -34,9 +40,9 @@ export class Status extends Component<{}> {
                 {canisters}
             </View>
             <TouchableOpacity
-                style={styles.start_recipe_button}
+                style={styles.select_recipe_button}
                 onPress={() => navigate('RecipeSelection')}>
-                <Text style={styles.start_recipe_text}>
+                <Text style={styles.select_recipe_text}>
                     Choose A Recipe!
                 </Text>
             </TouchableOpacity>
@@ -68,16 +74,19 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey'
     },
     canisters_view:{
-        flex:10
+        flex:7
     },
-    start_recipe_button: {
+    select_recipe_button: {
         flex: 1,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
         backgroundColor: 'white',
         marginBottom: 5,
     },
-    start_recipe_text: {
+    select_recipe_text: {
         textAlign: 'center',
-        fontSize: 40,
+        fontSize: responsiveFontSize(5),
     }
 });
 

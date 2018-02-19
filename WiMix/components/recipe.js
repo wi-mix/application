@@ -2,24 +2,44 @@ import {Component} from "react";
 import {makeRecipe} from "../actions";
 import {connect} from "react-redux";
 import React from "react";
-import {View, StyleSheet, TouchableOpacity, Text} from "react-native";
+import {View, StyleSheet, TouchableOpacity, Text, TextInput} from "react-native";
 import {Ingredient} from "./ingredient";
-
+import {responsiveFontSize} from "react-native-responsive-dimensions";
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
 export class Recipe extends Component<{}> {
     render() {
-        if (this.props.recipe == null) {
-            return <Text>Make a custom drink!</Text>
-        }
+        let editable = this.props.recipe == null;
         let ingredient_list = (() => {
             let render = [];
-            this.props.recipe.ingredients.forEach((ingredient) => {
-                render.push(<Ingredient key={ingredient.key} name={ingredient.name} amount={ingredient.amount}/>)
-            });
+            if (!editable) {
+                this.props.recipe.ingredients.forEach((ingredient) => {
+                    let available_ingredient = this.props.available.filter(available_ingredient=>ingredient.key === available_ingredient.key)[0];
+                    render.push(<Ingredient
+                        key={ingredient.key}
+                        name={ingredient.name}
+                        amount_required={ingredient.amount}
+                        total_amount={available_ingredient.amount}
+                        editable={false}/>)
+                });
+            } else {
+                this.props.available.forEach((ingredient)=>{
+                    render.push(<Ingredient key = {ingredient.key} name = {ingredient.name} total_amount={ingredient.amount} editable={true}/>)
+                });
+            }
             return render;
         })();
+        let recipe_name = editable?"Name it!":this.props.recipe.name;
+        let recipe_description = editable?"Describe it!":this.props.recipe.description;
+        let textColor = editable?'grey':'black';
+
         return <View style={styles.container}>
             <View style={styles.recipe_info_view}>
-                <Text style={styles.recipe_info}><Text style={{fontWeight:'bold'}}>{this.props.recipe.name}</Text>{'\n'}{this.props.recipe.description}</Text>
+                <TextInput style={styles.recipe_name} editable={editable} placeholder={recipe_name} placeholderTextColor={textColor}/>
+                <TextInput style={styles.recipe_description} editable={editable} multiline={true} placeholder={recipe_description} placeholderTextColor={textColor}/>
             </View>
             <View style={styles.recipe_contents}>
                 {ingredient_list}
@@ -36,6 +56,7 @@ export class Recipe extends Component<{}> {
     }
 }
 
+
 const mapDispatchToProps = (dispatch) => {
     return {
         makeRecipe: (recipe) => dispatch(makeRecipe(recipe))
@@ -45,6 +66,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
     return {
         recipe: state.recipeReducer.selected,
+        available: state.canisterStatusReducer.status
     };
 };
 const styles = StyleSheet.create({
@@ -54,26 +76,35 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey'
     },
     recipe_info_view: {
-        flex: 5,
-        backgroundColor:'white',
-        marginBottom:10
+        flex: 2,
+        backgroundColor: 'white',
+        marginBottom: 10,
     },
-    recipe_info: {
-        fontSize:20
+    recipe_name: {
+        fontSize: responsiveFontSize(5),
+        fontWeight: 'bold',
+        color:'black',
+        flex:1
+
+    },
+    recipe_description: {
+        flex:1
     },
     recipe_contents: {
         flex: 5,
-        marginBottom:10,
-        backgroundColor:'white'
+        marginBottom: 10,
+        backgroundColor: 'white'
     },
     make_recipe_button: {
-        flex:1,
+        flex: 1,
+        flexDirection:'row',
         backgroundColor: 'white',
         marginBottom: 5,
+        alignItems:'center',
+        justifyContent:'center'
     },
     make_recipe_button_text: {
-        textAlign: 'center',
-        fontSize: 40,
+        fontSize: responsiveFontSize(5),
     }
 });
 export default connect(mapStateToProps, mapDispatchToProps)(Recipe);
