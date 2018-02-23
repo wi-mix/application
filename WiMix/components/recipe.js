@@ -5,7 +5,7 @@ import React from "react";
 import {View, StyleSheet, TouchableOpacity, Text, TextInput} from "react-native";
 import Ingredient from "./ingredient";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
-import {WiMixButtonText} from "./wimix_text";
+import {AppText, WiMixButtonText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -21,7 +21,8 @@ export class Recipe extends Component<{}> {
         let ingredient_list = (() => {
             let render = [];
             if (!this.state.editable) {
-                this.props.recipe.ingredients.forEach((ingredient) => {
+                let sorted_ingredients = this.props.recipe.ingredients.sort((i1, i2)=>{return i1.order - i2.order});
+                sorted_ingredients.forEach((ingredient) => {
                     let available_ingredient = this.props.available.filter(available_ingredient=>ingredient.key === available_ingredient.key)[0];
                     render.push(<Ingredient
                         ingredient = {ingredient}
@@ -52,7 +53,6 @@ export class Recipe extends Component<{}> {
                 style={styles.make_recipe_button}
                 onPress={() => {
                     if(this.state.editable){
-                        console.log(this.props.recipe);
                         this.props.saveNewRecipe(this.props.recipe);
                     }
                     this.props.makeRecipe(this.props.recipe);
@@ -95,13 +95,14 @@ const styles = StyleSheet.create({
     },
     recipe_name: {
         fontSize: responsiveFontSize(5),
-        fontWeight: 'bold',
+        fontFamily:'ProductSansBold',
         color:'black',
         flex:1
 
     },
     recipe_description: {
-        flex:1
+        flex:1,
+        fontFamily:'ProductSansRegular'
     },
     recipe_contents: {
         flex: 5,

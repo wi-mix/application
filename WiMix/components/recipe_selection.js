@@ -5,20 +5,17 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {Recipe_Card} from "./recipe_card";
 import FAB from 'react-native-fab';
 import {clearRecipe, getRecipes, selectRecipe} from "../actions";
+
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
     Course: CMPUT 492
  */
 export class RecipeSelection extends Component<{}> {
-    static navigationOptions = {
-        title: "Recipe Selection"
-    };
     constructor(props) {
         super(props);
-        if(!this.props.recipes){
-            console.log("Loading recipes");
-            this.props.loadRecipes(this.props.available.map(ingredient=>ingredient.zobristKey));
+        if (!this.props.recipes) {
+            this.props.loadRecipes(this.props.available.map(ingredient => ingredient.zobristKey));
         }
     }
 
@@ -26,7 +23,7 @@ export class RecipeSelection extends Component<{}> {
     render() {
         const {navigate} = this.props.navigation;
         // If data is still being retrieved from the base station, indicate loading
-        if (this.props.isLoading) {
+        if (this.props.isCanisterStatusLoading) {
             return (
                 <Text>Loading...</Text>
             )
@@ -38,17 +35,18 @@ export class RecipeSelection extends Component<{}> {
                         data={this.props.recipes}
                         renderItem={({item}) =>
                             <TouchableOpacity
-                                onPress={()=>{
+                                onPress={() => {
                                     this.props.selectRecipe({item});
                                     navigate('Recipe');
-                                }}><Recipe_Card data={item}/></TouchableOpacity>
+                                }}><Recipe_Card data={item}/>
+                            </TouchableOpacity>
                         }
                     />
                 </View>
                 <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {
                     this.props.clearRecipeSelection();
                     navigate('Recipe')
-                }} visible={true} />
+                }} visible={true}/>
             </View>
         )
     }
@@ -57,9 +55,9 @@ export class RecipeSelection extends Component<{}> {
 // Link component prop to make them able to dispatch action creators
 const mapDispatchToProps = (dispatch) => {
     return {
-        clearRecipeSelection:()=>dispatch(clearRecipe()),
+        clearRecipeSelection: () => dispatch(clearRecipe()),
         loadRecipes: (keys) => dispatch(getRecipes(keys)),
-        selectRecipe:(recipe) => dispatch(selectRecipe(recipe))
+        selectRecipe: (recipe) => dispatch(selectRecipe(recipe))
     };
 };
 
@@ -67,7 +65,7 @@ const mapDispatchToProps = (dispatch) => {
 const mapStateToProps = (state) => {
     return {
         recipes: state.recipeReducer.recipes,
-        isLoading: state.recipeReducer.recipeLoading,
+        isCanisterStatusLoading: state.recipeReducer.recipeLoading,
         canisterIsLoading: state.canisterStatusReducer.canisterLoading,
         available: state.canisterStatusReducer.status
     };
@@ -83,8 +81,8 @@ const styles = StyleSheet.create({
     },
     custom_recipe: {
         backgroundColor: 'white',
-        flex:2,
-        marginTop:20
+        flex: 2,
+        marginTop: 20
 
     },
     server_recipe_list: {

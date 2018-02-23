@@ -2,9 +2,9 @@ import {Component} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import Canister from "./canister";
-import {updateCanisters} from "../actions";
+import {loadIngredients, updateCanisters} from "../actions";
 import {connect} from "react-redux";
-import {WiMixButtonText, WiMixText} from "./wimix_text";
+import {AppText, WiMixButtonText, WiMixText} from "./wimix_text";
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -14,16 +14,10 @@ import {WiMixButtonText, WiMixText} from "./wimix_text";
 const num_canisters = 3;
 
 export class Status extends Component<{}> {
-    // Title of this screen
-    static navigationOptions = {
-        title: "Canister Status"
-    };
-
-    constructor(props) {
-        super(props);
+    componentWillMount() {
         this.props.loadStatus();
+        this.props.loadIngredients();
     }
-
     render() {
         const {navigate} = this.props.navigation;
         // Render a canister view for each canister
@@ -32,7 +26,7 @@ export class Status extends Component<{}> {
             for (i = 0; i < num_canisters; i++) {
                 render.push(<Canister index={i} key={i}/>)
             }
-            return render;
+            return (this.props.isCanisterStatusLoading || this.props.isIngredientsLoading)?<AppText>Loading...</AppText>:render;
         })();
         // Render the canisters and a button to navigate to recipe selection
         return (<View style={styles.container}>
@@ -54,14 +48,17 @@ export class Status extends Component<{}> {
 // Link component prop to make them able to dispatch action creators
 const mapDispatchToProps = (dispatch) => {
     return {
-        loadStatus: () => dispatch(updateCanisters())
+        loadStatus: () => dispatch(updateCanisters()),
+        loadIngredients:()=>dispatch(loadIngredients())
     };
 };
 
 // Link component props to Redux state variables
 const mapStateToProps = (state) => {
     return {
-        isLoading: state.canisterStatusReducer.canisterLoading
+        isCanisterStatusLoading: state.canisterStatusReducer.canisterLoading,
+        isIngredientsLoading: state.ingredientReducer.ingredientsLoading,
+        ingredients:state.ingredientReducer.ingredients
     };
 };
 // Invoke links between component and Redux store
@@ -73,14 +70,14 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         backgroundColor: 'grey'
     },
-    canisters_view:{
-        flex:7
+    canisters_view: {
+        flex: 7
     },
     select_recipe_button: {
         flex: 1,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'center',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: 'white',
         marginBottom: 5,
     },

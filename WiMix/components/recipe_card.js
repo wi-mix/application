@@ -38,10 +38,8 @@ const styles = StyleSheet.create({
     },
     recipe_info:{
         fontSize:responsiveFontSize(5),
-        fontWeight:'bold',
         margin:5,
         flex:1,
-
     },
 
 });

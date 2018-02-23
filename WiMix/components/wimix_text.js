@@ -25,17 +25,17 @@ export class AppText extends Component {
 }
 export class WiMixButtonText extends Component {
     render() {
-        return <Text style = {[styles.button_text,this.context.textStyle]}>{this.props.children}</Text>
+        return <Text style = {styles.button_text}>{this.props.children}</Text>
     }
 }
 const styles = StyleSheet.create({
    default_text:{
-       // fontFamily:'kavivanar',
+       fontFamily:'ProductSansRegular',
        color:'black'
    },
     button_text:{
+        fontFamily:'ProductSansRegular',
         textAlign: 'center',
         fontSize: responsiveFontSize(5),
     }
-
 });

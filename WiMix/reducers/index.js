@@ -1,6 +1,8 @@
 import { combineReducers } from 'redux';
 import {
-    CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, RECIPE_SELECTED, RECIPE_UPDATING, SAVE_RECIPE,
+    CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, LOAD_INGREDIENTS, LOAD_INGREDIENTS_SUCCESS, RECIPE_SELECTED,
+    RECIPE_UPDATING,
+    SAVE_RECIPE,
     SET_SELECTED_AMOUNT, SET_SELECTED_DESCRIPTION, SET_SELECTED_NAME,
     UPDATE_CANISTER_SUCCESS
 } from "../actions";
@@ -9,8 +11,26 @@ import {
     Project: Wi-Mix
     Course: CMPUT 492
  */
-let canisterStatus = {status:[],canisterLoading:true};
-const canisterStatusReducer = (state = canisterStatus,action)=>{
+
+const ingredientReducer = (state = {ingredients:[],ingredientsLoading:true},action)=>{
+    switch(action.type){
+        case LOAD_INGREDIENTS_SUCCESS:
+            let sorted_ingredients = action.ingredients.sort((i1,i2)=>{return (i1.name < i2.name)?-1:(i2.name<i1.name)?1:0});
+            return Object.assign({},state,{
+                ingredients: sorted_ingredients,
+                ingredientsLoading:false
+            });
+        // Handle case for canister update started
+        case LOAD_INGREDIENTS:
+            return Object.assign({},state,{
+                ingredientsLoading:action.loading
+            });
+
+        default:
+            return state
+    }
+};
+const canisterStatusReducer = (state = {status:[],canisterLoading:true},action)=>{
     switch(action.type){
         // Handle case for canister update success
         case UPDATE_CANISTER_SUCCESS:
@@ -108,5 +128,6 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
 
 export default combineReducers({
     canisterStatusReducer,
-    recipeReducer
+    recipeReducer,
+    ingredientReducer
 });
