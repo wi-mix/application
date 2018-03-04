@@ -20,6 +20,7 @@ export class Ingredient extends Component<{}> {
     componentWillMount() {
         // Controls how sensitive the touch controls on the customizable volume are
         const volume_control_sensitivity = 500;
+        // Handle user touch input for adjusting custom recipe ingredient amounts
         this._panResponder = PanResponder.create({
             onMoveShouldSetResponderCapture: () => this.props.editable,
             onMoveShouldSetPanResponderCapture: () => this.props.editable,
@@ -29,6 +30,7 @@ export class Ingredient extends Component<{}> {
                     return {last_position: evt.nativeEvent.pageY};
                 });
             },
+            // Increase/decrease based on delta y from initial touch point
             onPanResponderMove: (evt, gestureState) => {
                 let change = (this.state.last_position - gestureState.moveY) / volume_control_sensitivity * this.props.ingredient.amount;
                 let new_required = this.state.required += change;
@@ -41,7 +43,8 @@ export class Ingredient extends Component<{}> {
             },
         })
     }
-
+    // Render the visual representation of the ingredient container.
+    // The red amount describes the amount of ingredient to be consumed out of the total amount available
     render() {
         let volume_style = {backgroundColor: 'red', flex: this.state.required / this.props.total_amount};
         return <View style={styles.canister_status_view}>

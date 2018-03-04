@@ -14,16 +14,19 @@ import {AppText, WiMixButtonText} from "./wimix_text";
 export class Recipe extends Component<{}> {
     constructor(props){
         super(props);
+        // Editable refers to whether this is a custom recipe being created or not
         this.state = {editable:Object.keys(this.props.recipe).length === 0};
     }
     render() {
-        console.log("rendering recipe");
         let ingredient_list = (() => {
             let render = [];
+            // If this isn't a custom recipe
             if (!this.state.editable) {
+                // Display ingredients in the order specified by the recipe
                 let sorted_ingredients = this.props.recipe.ingredients.sort((i1, i2)=>{return i1.order - i2.order});
                 sorted_ingredients.forEach((ingredient) => {
                     let available_ingredient = this.props.available.filter(available_ingredient=>ingredient.key === available_ingredient.key)[0];
+                    // Render each required ingredient
                     render.push(<Ingredient
                         ingredient = {ingredient}
                         key = {ingredient.key}
@@ -31,12 +34,14 @@ export class Recipe extends Component<{}> {
                         editable={false}/>)
                 });
             } else {
+                // Render all possible ingredients to be used in the custom recipe
                 this.props.available.forEach((ingredient)=>{
                     render.push(<Ingredient ingredient = {ingredient} total_amount={ingredient.amount} key={ingredient.key} editable={true}/>)
                 });
             }
             return render;
         })();
+        // Either display default text for custom recipe creation, or the pre-established data
         let recipe_name = this.state.editable?"Name it!":this.props.recipe.name;
         let recipe_description = this.state.editable?"Describe it!":this.props.recipe.description;
         let textColor = this.state.editable?'grey':'black';
@@ -49,6 +54,9 @@ export class Recipe extends Component<{}> {
             <View style={styles.recipe_contents}>
                 {ingredient_list}
             </View>
+            /*
+            Button to trigger pour requests being dispatched to the base station
+             */
             <TouchableOpacity
                 style={styles.make_recipe_button}
                 onPress={() => {

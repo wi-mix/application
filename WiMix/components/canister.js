@@ -25,11 +25,15 @@ export class Canister extends Component<{}> {
                 return <Picker.Item label={ingredient.name} value={ingredient.name} key={ingredient.key}/>
             });
         return (
+            // Display volume remaining
             <View style={styles.canister_status_view}>
                 <View style={{flex: .3, flexDirection: 'column-reverse'}}>
                     <View style={volume_style}/>
                 </View>
                 <View style={styles.recipe_info_text}>
+                    /*
+                        Displays all possible ingredients for base station setup
+                     */
                     <Picker
                         selectedValue = {this.state.specific_container.name}
                         enabled={this.state.editable}

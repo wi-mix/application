@@ -114,7 +114,7 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
                     })
                 })
             }
-
+        // Save a new custom recipe created by the user
         case SAVE_RECIPE:
             let keyed_recipe = action.recipe;
             keyed_recipe.key = state.recipes.length +1;

@@ -2,8 +2,13 @@ import {Component} from "react";
 import {StyleSheet, Text} from "react-native";
 import React from "react";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
-
+/*
+    Author: Harley Vanselow
+    Project: Wi-Mix
+    Course: CMPUT 492
+ */
 // Credit to https://gist.github.com/neilsarkar/c9b5fc7e67bbbe4c407eec17deb7311e
+// Applied to all text in the app to ensure consistent styling
 export class AppText extends Component {
     constructor(props) {
         super(props);

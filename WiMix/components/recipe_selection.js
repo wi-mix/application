@@ -31,6 +31,9 @@ export class RecipeSelection extends Component<{}> {
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
+                    /*
+                    Render list of recipes that can be made
+                     */
                     <FlatList
                         data={this.props.recipes}
                         renderItem={({item}) =>
@@ -43,6 +46,9 @@ export class RecipeSelection extends Component<{}> {
                         }
                     />
                 </View>
+                /*
+                Custom recipe creation button
+                 */
                 <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {
                     this.props.clearRecipeSelection();
                     navigate('Recipe')
