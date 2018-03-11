@@ -12,8 +12,7 @@ import {clearRecipe, getRecipes, selectRecipe} from "../actions";
     Course: CMPUT 492
  */
 export class RecipeSelection extends Component<{}> {
-    constructor(props) {
-        super(props);
+    componentWillMount(){
         if (!this.props.recipes) {
             this.props.loadRecipes(this.props.available.map(ingredient => ingredient.zobristKey));
         }
@@ -28,14 +27,17 @@ export class RecipeSelection extends Component<{}> {
                 <Text>Loading...</Text>
             )
         }
+        console.log(this.props.available);
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
-                    /*
+                    {/*
                     Render list of recipes that can be made
-                     */
+                     */}
                     <FlatList
-                        data={this.props.recipes}
+                        data={this.props.recipes.filter(recipe=>recipe.ingredients.every(ingredient=>{
+                            return ingredient.amount <= this.props.available.find(available=>available.key === ingredient.key).amount;
+                        }))}
                         renderItem={({item}) =>
                             <TouchableOpacity
                                 onPress={() => {
@@ -46,9 +48,9 @@ export class RecipeSelection extends Component<{}> {
                         }
                     />
                 </View>
-                /*
+                {/*
                 Custom recipe creation button
-                 */
+                 */}
                 <FAB buttonColor="red" iconTextColor="#FFFFFF" onClickAction={() => {
                     this.props.clearRecipeSelection();
                     navigate('Recipe')

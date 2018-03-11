@@ -1,8 +1,8 @@
 import { combineReducers } from 'redux';
 import {
     CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, LOAD_INGREDIENTS, LOAD_INGREDIENTS_SUCCESS, RECIPE_SELECTED,
-    RECIPE_UPDATING,
-    SAVE_RECIPE,
+    RECIPE_UPDATING, SAVE_CONFIG_SUCCESS,
+    SAVE_RECIPE, SAVING_CONFIG,
     SET_SELECTED_AMOUNT, SET_SELECTED_DESCRIPTION, SET_SELECTED_NAME,
     UPDATE_CANISTER_SUCCESS
 } from "../actions";
@@ -30,13 +30,23 @@ const ingredientReducer = (state = {ingredients:[],ingredientsLoading:true},acti
             return state
     }
 };
-const canisterStatusReducer = (state = {status:[],canisterLoading:true},action)=>{
+const canisterStatusReducer = (state = {status:[],canisterLoading:true,configComplete:false},action)=>{
     switch(action.type){
         // Handle case for canister update success
+        case SAVING_CONFIG:
+            return Object.assign({},state,{
+                configSaving:action.saving
+            });
         case UPDATE_CANISTER_SUCCESS:
+            console.log(action.status);
             return Object.assign({},state,{
                 status: action.status,
-                canisterLoading:false
+                canisterLoading:false,
+                configComplete:action.configComplete
+            });
+        case SAVE_CONFIG_SUCCESS:
+            return Object.assign({},state,{
+                configComplete:true
             });
         // Handle case for canister update started
         case CANISTER_UPDATING:

@@ -1,5 +1,3 @@
-import Long from "long";
-
 export const CANISTER_UPDATING = 'CANISTER_UPDATING';
 export const RECIPE_UPDATING = 'RECIPE_UPDATING';
 export const UPDATE_CANISTER_SUCCESS = 'UPDATE_CANISTER_SUCCESS';
@@ -8,11 +6,14 @@ export const RECIPE_SELECTED = 'RECIPE_SELECTED';
 // export const MAKE_RECIPE = 'MAKE_RECIPE';
 export const DESELECT_RECIPE = 'DESELECT_RECIPE';
 export const SAVE_RECIPE = 'SAVE_RECIPE';
+export const SAVING_CONFIG = 'SAVING_CONFIG';
 export const SET_SELECTED_AMOUNT = 'SET_SELECTED_AMOUNT';
 export const SET_SELECTED_NAME = 'SET_SELECTED_NAME';
 export const SET_SELECTED_DESCRIPTION = 'SET_SELECTED_DESCRIPTION';
 export const LOAD_INGREDIENTS = 'LOAD_INGREDIENTS';
 export const LOAD_INGREDIENTS_SUCCESS = 'LOAD_INGREDIENTS_SUCCESS';
+export const SAVE_CONFIG_SUCCESS = 'SAVE_CONFIG_SUCCESS';
+
 /*
     Author: Harley Vanselow
     Project: Wi-Mix
@@ -139,13 +140,25 @@ export function updatingRecipe(loading) {
     };
 }
 
-export function loadIngredientsSuccess(ingredients){
+export function savingConfig(saving) {
     return {
-        type:LOAD_INGREDIENTS_SUCCESS,
-        ingredients
+        type: SAVING_CONFIG,
+        saving
     }
 }
 
+export function canisterConfigSuccess(){
+    return {
+        type: SAVE_CONFIG_SUCCESS
+    }
+}
+
+export function loadIngredientsSuccess(ingredients) {
+    return {
+        type: LOAD_INGREDIENTS_SUCCESS,
+        ingredients
+    }
+}
 
 
 // Action to indicate the canister data has completed loading
@@ -170,28 +183,58 @@ export function saveRecipe(recipe) {
     }
 }
 
+
+
 export function makeRecipe(recipe) {
     return (dispatch) => {
 
     }
 }
 
-export function loadingIngredients(loading){
+export function loadingIngredients(loading) {
     return {
         type: LOAD_INGREDIENTS,
         loading
     }
 }
+export function saveConfig(status) {
+    return (dispatch) => {
+        dispatch(savingConfig(true));
+        let basic_status = status.map(canister=>{
+           return {"id":canister.key,"name":canister.name}
+        });
+        let post_body = {'ingredients':basic_status};
+        fetch('http://192.168.137.63/ingredients', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post_body),
+        }).catch((error) => {
+            console.error(error);
+        }).then(response=>{
+            if(response.ok){
+                console.log("Canisert config success");
+                dispatch(canisterConfigSuccess());
+            }
+        })
+    }
+}
 
-
-export function loadIngredients(){
-    return (dispatch)=>{
+export function loadIngredients() {
+    return (dispatch) => {
         dispatch(loadingIngredients(true));
+        console.log("Loading ingredients");
         fetch('http://wimix.tech/api/recipes/ingredients')
-            .then(response=>{
+            .catch((error) => {
+                console.error(error);
+            })
+            .then(response => {
                 return response.json();
             })
-            .then(response_json=>{
+            .then(response_json => {
+                console.log("Completed loading ingredients");
                 dispatch(loadIngredientsSuccess(response_json));
             })
     }
@@ -211,10 +254,8 @@ export function getRecipes(keys) {
         }).catch((error) => {
             console.error(error);
         })
-            .then(response => response.json())
-            // .then(dispatch(getRecipeSuccess(fake_recipe_data)))
+        .then(response => response.json())
         .then(recipe_json => {
-            console.log(recipe_json);
             dispatch(getRecipeSuccess(recipe_json))
         });
     }
@@ -224,8 +265,18 @@ export function getRecipes(keys) {
 export function updateCanisters() {
     return (dispatch) => {
         dispatch(updatingCanister(true));
-        setTimeout(()=>{
-            dispatch(updateCanisterSuccess(fake_status_data));
-        },1000);
+        fetch('http://192.168.137.63/ingredients', {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+        }).catch((error) => {
+            console.error(error);
+        })
+            .then(response => response.json())
+            .then(canister_status_json => {
+                dispatch(updateCanisterSuccess(canister_status_json['ingredients']))
+            });
     };
 }

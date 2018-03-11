@@ -2,7 +2,7 @@ import {Component} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import Canister from "./canister";
-import {loadIngredients, updateCanisters} from "../actions";
+import {loadIngredients, saveConfig, updateCanisters} from "../actions";
 import {connect} from "react-redux";
 import {AppText, WiMixButtonText, WiMixText} from "./wimix_text";
 /*
@@ -20,6 +20,15 @@ export class Status extends Component<{}> {
     }
     render() {
         const {navigate} = this.props.navigation;
+        let ButtonText = this.props.canisterConfigComplete?"Choose A Recipe!":
+            this.props.configSaving?"Saving...":"Save Config!";
+        let ButtonAction = this.props.canisterConfigComplete?()=>{
+            navigate('RecipeSelection')
+        }:()=>{
+             if(this.props.canisterStatus.every(status=>status.configured)){
+                 this.props.saveConfig(this.props.canisterStatus);
+             }
+        };
         // Render a canister view for each canister
         const canisters = (() => {
             var render = [];
@@ -35,9 +44,9 @@ export class Status extends Component<{}> {
             </View>
             <TouchableOpacity
                 style={styles.select_recipe_button}
-                onPress={() => navigate('RecipeSelection')}>
+                onPress={ButtonAction}>
                 <WiMixButtonText>
-                    Choose A Recipe!
+                    {ButtonText}
                 </WiMixButtonText>
             </TouchableOpacity>
         </View>)
@@ -49,7 +58,8 @@ export class Status extends Component<{}> {
 const mapDispatchToProps = (dispatch) => {
     return {
         loadStatus: () => dispatch(updateCanisters()),
-        loadIngredients:()=>dispatch(loadIngredients())
+        loadIngredients:()=>dispatch(loadIngredients()),
+        saveConfig:(status)=>dispatch(saveConfig(status))
     };
 };
 
@@ -58,7 +68,10 @@ const mapStateToProps = (state) => {
     return {
         isCanisterStatusLoading: state.canisterStatusReducer.canisterLoading,
         isIngredientsLoading: state.ingredientReducer.ingredientsLoading,
-        ingredients:state.ingredientReducer.ingredients
+        canisterStatus: state.canisterStatusReducer.status,
+        canisterConfigComplete:state.canisterStatusReducer.configComplete,
+        ingredients:state.ingredientReducer.ingredients,
+        configSaving:state.canisterStatusReducer.configSaving
     };
 };
 // Invoke links between component and Redux store

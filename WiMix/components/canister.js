@@ -16,6 +16,15 @@ export class Canister extends Component<{}> {
         let specific_container = this.props.canisterStatus[this.props.index];
         this.state = {editable: specific_container.name == null, specific_container: specific_container}
     }
+    componentWillMount(){
+        if(!this.state.editable){
+            this.props.setCanisterStatus(this.props.canisterStatus.map(status=> {
+                return Object.assign({}, status, {
+                    'zobristKey': this.props.ingredients.find(ingredient => ingredient.id === status.key).zobristKey
+                });
+            }));
+        }
+    }
 
     render() {
         // Render canister data, including visualization of volume, fluid name, and volume present
@@ -31,16 +40,17 @@ export class Canister extends Component<{}> {
                     <View style={volume_style}/>
                 </View>
                 <View style={styles.recipe_info_text}>
-                    /*
+                    {/*
                         Displays all possible ingredients for base station setup
-                     */
+                     */}
                     <Picker
                         selectedValue = {this.state.specific_container.name}
                         enabled={this.state.editable}
                         onValueChange={(ingredientName) => {
                             let ingredient = this.props.ingredients.filter(ingredient=>ingredient.name === ingredientName)[0];
                             let updated_ingredient = Object.assign({}, ingredient, {
-                                amount: this.state.specific_container.amount
+                                amount: this.state.specific_container.amount,
+                                configured: true
                             });
                             this.setState({
                               specific_container:updated_ingredient

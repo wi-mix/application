@@ -54,9 +54,9 @@ export class Recipe extends Component<{}> {
             <View style={styles.recipe_contents}>
                 {ingredient_list}
             </View>
-            /*
+            {/*
             Button to trigger pour requests being dispatched to the base station
-             */
+             */}
             <TouchableOpacity
                 style={styles.make_recipe_button}
                 onPress={() => {
