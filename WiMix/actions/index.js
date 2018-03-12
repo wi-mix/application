@@ -13,6 +13,7 @@ export const SET_SELECTED_DESCRIPTION = 'SET_SELECTED_DESCRIPTION';
 export const LOAD_INGREDIENTS = 'LOAD_INGREDIENTS';
 export const LOAD_INGREDIENTS_SUCCESS = 'LOAD_INGREDIENTS_SUCCESS';
 export const SAVE_CONFIG_SUCCESS = 'SAVE_CONFIG_SUCCESS';
+let BOARD_IP = "";
 
 /*
     Author: Harley Vanselow
@@ -147,7 +148,7 @@ export function savingConfig(saving) {
     }
 }
 
-export function canisterConfigSuccess(){
+export function canisterConfigSuccess() {
     return {
         type: SAVE_CONFIG_SUCCESS
     }
@@ -184,7 +185,6 @@ export function saveRecipe(recipe) {
 }
 
 
-
 export function makeRecipe(recipe) {
     return (dispatch) => {
 
@@ -197,13 +197,14 @@ export function loadingIngredients(loading) {
         loading
     }
 }
+
 export function saveConfig(status) {
     return (dispatch) => {
         dispatch(savingConfig(true));
-        let basic_status = status.map(canister=>{
-           return {"id":canister.key,"name":canister.name}
+        let basic_status = status.map(canister => {
+            return {"id": canister.key, "name": canister.name}
         });
-        let post_body = {'ingredients':basic_status};
+        let post_body = {'ingredients': basic_status};
         fetch('http://192.168.137.63/ingredients', {
             method: 'POST',
             headers: {
@@ -213,9 +214,9 @@ export function saveConfig(status) {
             body: JSON.stringify(post_body),
         }).catch((error) => {
             console.error(error);
-        }).then(response=>{
-            if(response.ok){
-                console.log("Canisert config success");
+        }).then(response => {
+            if (response.ok) {
+                console.log("Canister config success");
                 dispatch(canisterConfigSuccess());
             }
         })
@@ -254,29 +255,53 @@ export function getRecipes(keys) {
         }).catch((error) => {
             console.error(error);
         })
-        .then(response => response.json())
-        .then(recipe_json => {
-            dispatch(getRecipeSuccess(recipe_json))
-        });
+            .then(response => response.json())
+            .then(recipe_json => {
+                dispatch(getRecipeSuccess(recipe_json))
+            });
     }
+}
+
+function findBoardIP(dispatch) {
+    const dgram = require('dgram');
+    const socket = dgram.createSocket('udp4');
+    socket.bind(12345);
+    socket.on('message', function (msg, rinfo) {
+        console.log(msg);
+        msg = Array.from(msg).map(val=>String.fromCharCode(val)).join("");
+        console.log(msg);
+        if (msg.startsWith("g5:")) {
+            BOARD_IP = msg.split("g5:")[1];
+            console.log("Board IP: ", BOARD_IP);
+            callBoard(dispatch);
+        }
+    });
+}
+
+function callBoard(dispatch) {
+    fetch('http://' + BOARD_IP + '/ingredients', {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+    }).catch((error) => {
+        console.error(error);
+    })
+        .then(response => response.json())
+        .then(canister_status_json => {
+            dispatch(updateCanisterSuccess(canister_status_json['ingredients']))
+        });
 }
 
 // Method to start canister update
 export function updateCanisters() {
     return (dispatch) => {
         dispatch(updatingCanister(true));
-        fetch('http://192.168.137.63/ingredients', {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-        }).catch((error) => {
-            console.error(error);
-        })
-            .then(response => response.json())
-            .then(canister_status_json => {
-                dispatch(updateCanisterSuccess(canister_status_json['ingredients']))
-            });
-    };
+        if (BOARD_IP === "") {
+            findBoardIP(dispatch);
+        } else {
+            callBoard(dispatch);
+        }
+    }
 }

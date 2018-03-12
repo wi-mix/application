@@ -45,6 +45,7 @@
 		1C795B0862A64BEE879A2D40 /* kavivanar.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AA904BC7D63F42B0B1823DCF /* kavivanar.ttf */; };
 		CABFD0EF70B7459EA71D4C52 /* ProductSansRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 15C155FB642149468102C61A /* ProductSansRegular.ttf */; };
 		4C9B74EF14C14835B4BD9800 /* ProductSansBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5B912C49189F44F6B9286DC1 /* ProductSansBold.ttf */; };
+		9FCD69A6FD9B4BBE867D1E6B /* libUdpSockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 166B0F3E0BB74C31A57B194F /* libUdpSockets.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -303,6 +304,8 @@
 		AA904BC7D63F42B0B1823DCF /* kavivanar.ttf */ = {isa = PBXFileReference; name = "kavivanar.ttf"; path = "../assets/fonts/kavivanar.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		15C155FB642149468102C61A /* ProductSansRegular.ttf */ = {isa = PBXFileReference; name = "ProductSansRegular.ttf"; path = "../assets/fonts/ProductSansRegular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		5B912C49189F44F6B9286DC1 /* ProductSansBold.ttf */ = {isa = PBXFileReference; name = "ProductSansBold.ttf"; path = "../assets/fonts/ProductSansBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		89E7F15AFD1C4BE384B858D6 /* UdpSockets.xcodeproj */ = {isa = PBXFileReference; name = "UdpSockets.xcodeproj"; path = "../node_modules/react-native-udp/ios/UdpSockets.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		166B0F3E0BB74C31A57B194F /* libUdpSockets.a */ = {isa = PBXFileReference; name = "libUdpSockets.a"; path = "libUdpSockets.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -331,6 +334,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				9FCD69A6FD9B4BBE867D1E6B /* libUdpSockets.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -508,6 +512,7 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
+				89E7F15AFD1C4BE384B858D6 /* UdpSockets.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1103,6 +1108,14 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WiMix.app/WiMix";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Debug;
 		};
@@ -1120,6 +1133,14 @@
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WiMix.app/WiMix";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Release;
 		};
@@ -1138,6 +1159,10 @@
 				);
 				PRODUCT_NAME = WiMix;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Debug;
 		};
@@ -1155,6 +1180,10 @@
 				);
 				PRODUCT_NAME = WiMix;
 				VERSIONING_SYSTEM = "apple-generic";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Release;
 		};
@@ -1181,6 +1210,14 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Debug;
 		};
@@ -1207,6 +1244,14 @@
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.2;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)\..\node_modules\react-native-udp\ios/**",
+				);
 			};
 			name = Release;
 		};
@@ -1228,6 +1273,10 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WiMix-tvOS.app/WiMix-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 			};
 			name = Debug;
 		};
@@ -1249,6 +1298,10 @@
 				SDKROOT = appletvos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WiMix-tvOS.app/WiMix-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 			};
 			name = Release;
 		};

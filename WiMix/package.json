@@ -1,11 +1,15 @@
 {
+
   "name": "WiMix",
   "version": "0.0.1",
   "private": true,
-  "rnpm":{
-    "assets":[
+  "rnpm": {
+    "assets": [
       "./assets/fonts"
     ]
+  },
+  "browser": {
+    "dgram": "react-native-udp"
   },
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
@@ -16,6 +20,7 @@
     "react-native": "^0.52.2",
     "react-native-fab": "^1.0.6",
     "react-native-responsive-dimensions": "^1.0.2",
+    "react-native-udp": "^2.3.1",
     "react-navigation": "^1.0.0-beta.29",
     "react-redux": "latest",
     "redux": "latest",
