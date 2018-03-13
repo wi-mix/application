@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'black',
     },
     recipe_info_text: {
-        fontSize: responsiveFontSize(3),
+        fontSize: responsiveFontSize(2.5),
         flex: .6,
         paddingLeft: 10,
     },

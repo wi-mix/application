@@ -13,6 +13,7 @@ export const SET_SELECTED_DESCRIPTION = 'SET_SELECTED_DESCRIPTION';
 export const LOAD_INGREDIENTS = 'LOAD_INGREDIENTS';
 export const LOAD_INGREDIENTS_SUCCESS = 'LOAD_INGREDIENTS_SUCCESS';
 export const SAVE_CONFIG_SUCCESS = 'SAVE_CONFIG_SUCCESS';
+export const CANISTER_CONFIG_COMPLETE = 'CANISTER_CONFIG_COMPLETE';
 let BOARD_IP = "";
 
 /*
@@ -67,28 +68,30 @@ const fake_recipe_data = [{
     "ordered": true
 }];
 
-const fake_status_data = [
-    {
-        "amount": 200,
-        // "name": "Vodka",
-        // "description": "Clear and tasteless",
-        // "key": 71,
-        // "zobristKey": 7928953673119722687
-    },
-    {
-        "amount": 100,
-        // "name": "Lime Juice",
-        // "description": "",
-        // "key": 90,
-        // "zobristKey": -2205514147362180360
-    },
-    {
-        "amount": 120,
-        // "name": "Lemon Lime Soda",
-        // "description": "",
-        // "key": 66,
-        // "zobristKey": -3458659697403095153
-    }];
+const fake_status_data = {'ingredients':[
+        {
+            "amount": 200,
+            // "name": "Vodka",
+            // "description": "Clear and tasteless",
+            // "key": 71,
+            // "zobristKey": 7928953673119722687
+        },
+        {
+            "amount": 100,
+            // "name": "Lime Juice",
+            // "description": "",
+            // "key": 90,
+            // "zobristKey": -2205514147362180360
+        },
+        {
+            "amount": 120,
+            // "name": "Lemon Lime Soda",
+            // "description": "",
+            // "key": 66,
+            // "zobristKey": -3458659697403095153
+        }]
+    };
+
 
 export function clearRecipe() {
     return {
@@ -166,7 +169,7 @@ export function loadIngredientsSuccess(ingredients) {
 export function updateCanisterSuccess(status) {
     return {
         type: UPDATE_CANISTER_SUCCESS,
-        status
+        status,
     };
 }
 
@@ -174,6 +177,12 @@ export function getRecipeSuccess(recipes) {
     return {
         type: GET_RECIPE_SUCCESS,
         recipes
+    }
+}
+
+export function canisterConfigComplete(){
+    return {
+        type: CANISTER_CONFIG_COMPLETE
     }
 }
 
@@ -205,7 +214,7 @@ export function saveConfig(status) {
             return {"id": canister.key, "name": canister.name}
         });
         let post_body = {'ingredients': basic_status};
-        fetch('http://192.168.137.63/ingredients', {
+        fetch('http://'+BOARD_IP+'/ingredients', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -263,6 +272,7 @@ export function getRecipes(keys) {
 }
 
 function findBoardIP(dispatch) {
+    console.log("Searching for board...");
     const dgram = require('dgram');
     const socket = dgram.createSocket('udp4');
     socket.bind(12345);
@@ -273,13 +283,15 @@ function findBoardIP(dispatch) {
         if (msg.startsWith("g5:")) {
             BOARD_IP = msg.split("g5:")[1];
             console.log("Board IP: ", BOARD_IP);
+            socket.close();
             callBoard(dispatch);
         }
     });
 }
 
 function callBoard(dispatch) {
-    fetch('http://' + BOARD_IP + '/ingredients', {
+    let board_address = 'http://' + BOARD_IP + '/ingredients';
+    fetch(board_address, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -290,12 +302,19 @@ function callBoard(dispatch) {
     })
         .then(response => response.json())
         .then(canister_status_json => {
-            dispatch(updateCanisterSuccess(canister_status_json['ingredients']))
+            // canister_status_json = fake_status_data;
+            let canister_data = canister_status_json['ingredients'];
+            if(canister_data.every(ingredient=>ingredient['name'])){
+                console.log("received full data");
+                dispatch(canisterConfigComplete())
+            }
+            dispatch(updateCanisterSuccess(canister_data))
         });
 }
 
 // Method to start canister update
 export function updateCanisters() {
+    console.log('Updating canisters');
     return (dispatch) => {
         dispatch(updatingCanister(true));
         if (BOARD_IP === "") {

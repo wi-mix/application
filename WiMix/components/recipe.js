@@ -36,7 +36,7 @@ export class Recipe extends Component<{}> {
             } else {
                 // Render all possible ingredients to be used in the custom recipe
                 this.props.available.forEach((ingredient)=>{
-                    render.push(<Ingredient ingredient = {ingredient} total_amount={ingredient.amount} key={ingredient.key} editable={true}/>)
+                    render.push(<Ingredient ingredient = {ingredient} total_amount={ingredient.amount} key={ingredient.id} editable={true}/>)
                 });
             }
             return render;

@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import {
+    CANISTER_CONFIG_COMPLETE,
     CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, LOAD_INGREDIENTS, LOAD_INGREDIENTS_SUCCESS, RECIPE_SELECTED,
     RECIPE_UPDATING, SAVE_CONFIG_SUCCESS,
     SAVE_RECIPE, SAVING_CONFIG,
@@ -42,7 +43,10 @@ const canisterStatusReducer = (state = {status:[],canisterLoading:true,configCom
             return Object.assign({},state,{
                 status: action.status,
                 canisterLoading:false,
-                configComplete:action.configComplete
+            });
+        case CANISTER_CONFIG_COMPLETE:
+            return Object.assign({},state,{
+               configComplete:true
             });
         case SAVE_CONFIG_SUCCESS:
             return Object.assign({},state,{
