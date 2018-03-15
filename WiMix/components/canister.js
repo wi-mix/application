@@ -20,7 +20,7 @@ export class Canister extends Component<{}> {
         if(!this.state.editable){
             this.props.setCanisterStatus(this.props.canisterStatus.map(status=> {
                 return Object.assign({}, status, {
-                    'zobristKey': this.props.ingredients.find(ingredient => ingredient.id === status.key).zobristKey
+                    'zobristKey': this.props.ingredients.find(ingredient => ingredient.key === status.key).zobristKey
                 });
             }));
         }

@@ -196,7 +196,26 @@ export function saveRecipe(recipe) {
 
 export function makeRecipe(recipe) {
     return (dispatch) => {
-
+        let ingredients = recipe.ingredients.map((ingredient,index)=>{
+           return {'amount':ingredient.amount,'order':index}
+        });
+        let post_object = {'ingredients':ingredients};
+        console.log(post_object);
+        fetch('http://'+BOARD_IP+'/dispense', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(post_object),
+        }).catch((error) => {
+            console.error(error);
+        }).then(response => {
+            if (response.ok) {
+                console.log("Pour request successful");
+                dispatch(canisterConfigSuccess());
+            }
+        })
     }
 }
 
@@ -211,7 +230,7 @@ export function saveConfig(status) {
     return (dispatch) => {
         dispatch(savingConfig(true));
         let basic_status = status.map(canister => {
-            return {"id": canister.key, "name": canister.name}
+            return {"key": canister.key, "name": canister.name}
         });
         let post_body = {'ingredients': basic_status};
         fetch('http://'+BOARD_IP+'/ingredients', {
@@ -251,7 +270,6 @@ export function loadIngredients() {
 }
 
 export function getRecipes(keys) {
-    console.log(keys);
     return (dispatch) => {
         dispatch(updatingRecipe(true));
         fetch('http://wimix.tech/api/recipes/drinks', {
@@ -305,7 +323,6 @@ function callBoard(dispatch) {
             // canister_status_json = fake_status_data;
             let canister_data = canister_status_json['ingredients'];
             if(canister_data.every(ingredient=>ingredient['name'])){
-                console.log("received full data");
                 dispatch(canisterConfigComplete())
             }
             dispatch(updateCanisterSuccess(canister_data))

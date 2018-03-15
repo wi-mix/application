@@ -27,7 +27,6 @@ export class RecipeSelection extends Component<{}> {
                 <Text>Loading...</Text>
             )
         }
-        console.log(this.props.available);
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>

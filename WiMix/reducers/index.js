@@ -39,7 +39,6 @@ const canisterStatusReducer = (state = {status:[],canisterLoading:true,configCom
                 configSaving:action.saving
             });
         case UPDATE_CANISTER_SUCCESS:
-            console.log(action.status);
             return Object.assign({},state,{
                 status: action.status,
                 canisterLoading:false,
@@ -100,6 +99,7 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
                 amount:action.amount
             });
             if(state.selected['ingredients'] == null){
+                console.log("First ingredient ",updated_ingredient);
                 return Object.assign({},state,{
                     selected:Object.assign({},state.selected,{
                         ingredients:[updated_ingredient]
@@ -108,6 +108,7 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             }
             // If ingredient is already present update its amount
             else if (state.selected.ingredients.some(ingredient=>ingredient.key === updated_ingredient.key)){
+                console.log("Update ingredient ",updated_ingredient);
                 return Object.assign({},state,{
                     selected:Object.assign({},state.selected,{
                         ingredients:state.selected.ingredients.map(ingredient=>{
@@ -122,6 +123,7 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
                 })
              // Otherwise this is a new ingredient to add
             } else{
+                console.log("New ingredient ",updated_ingredient);
                 return Object.assign({},state,{
                     selected:Object.assign({},state.selected,{
                         ingredients:[...state.selected.ingredients,updated_ingredient]
@@ -130,6 +132,7 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             }
         // Save a new custom recipe created by the user
         case SAVE_RECIPE:
+            console.log("Saving recipe...");
             let keyed_recipe = action.recipe;
             keyed_recipe.key = state.recipes.length +1;
             return Object.assign({},state,{
