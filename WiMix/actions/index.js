@@ -197,7 +197,7 @@ export function saveRecipe(recipe) {
 export function makeRecipe(recipe) {
     return (dispatch) => {
         let ingredients = recipe.ingredients.map((ingredient,index)=>{
-           return {'amount':ingredient.amount,'order':index}
+           return {'amount':Math.round(ingredient.amount),'order':index}
         });
         let post_object = {'ingredients':ingredients};
         console.log(post_object);
@@ -209,11 +209,14 @@ export function makeRecipe(recipe) {
             },
             body: JSON.stringify(post_object),
         }).catch((error) => {
+            // Handle http 409 error (dispenser is busy)
             console.error(error);
         }).then(response => {
             if (response.ok) {
                 console.log("Pour request successful");
                 dispatch(canisterConfigSuccess());
+            }else{
+                console.error(response)
             }
         })
     }
@@ -271,6 +274,7 @@ export function loadIngredients() {
 
 export function getRecipes(keys) {
     return (dispatch) => {
+        console.log("Fetching recipes");
         dispatch(updatingRecipe(true));
         fetch('http://wimix.tech/api/recipes/drinks', {
             method: 'POST',
@@ -284,6 +288,7 @@ export function getRecipes(keys) {
         })
             .then(response => response.json())
             .then(recipe_json => {
+                console.log("Completed fetching recipes");
                 dispatch(getRecipeSuccess(recipe_json))
             });
     }
@@ -309,7 +314,7 @@ function findBoardIP(dispatch) {
 
 function callBoard(dispatch) {
     let board_address = 'http://' + BOARD_IP + '/ingredients';
-    fetch(board_address, {
+    return fetch(board_address, {
         method: 'GET',
         headers: {
             Accept: 'application/json',
@@ -337,7 +342,7 @@ export function updateCanisters() {
         if (BOARD_IP === "") {
             findBoardIP(dispatch);
         } else {
-            callBoard(dispatch);
+            return callBoard(dispatch);
         }
     }
 }

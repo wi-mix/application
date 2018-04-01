@@ -1,5 +1,5 @@
 import {Component} from "react";
-import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {FlatList, ListView, RefreshControl, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import Canister from "./canister";
 import {loadIngredients, saveConfig, updateCanisters} from "../actions";
@@ -14,33 +14,58 @@ import {AppText, WiMixButtonText, WiMixText} from "./wimix_text";
 const num_canisters = 3;
 
 export class Status extends Component<{}> {
+    constructor(props) {
+        super(props);
+        this.state = {
+            refreshing: false,
+        };
+    }
     componentWillMount() {
         this.props.loadStatus();
         this.props.loadIngredients();
     }
+    _onRefresh() {
+        this.setState({refreshing: true});
+        this.props.loadStatus().then(() => {
+            this.setState({refreshing: false});
+        });
+    }
     render() {
         const {navigate} = this.props.navigation;
-        let ButtonText = this.props.canisterConfigComplete?"Choose A Recipe!":
-            this.props.configSaving?"Saving...":"Save Config!";
-        let ButtonAction = this.props.canisterConfigComplete?()=>{
+        let ButtonText = this.props.canisterConfigComplete ? "Choose A Recipe!" :
+            this.props.configSaving ? "Saving..." : "Save Config!";
+        let ButtonAction = this.props.canisterConfigComplete ? () => {
             navigate('RecipeSelection')
-        }:()=>{
-             if(this.props.canisterStatus.every(status=>status.configured)){
-                 this.props.saveConfig(this.props.canisterStatus);
-             }
+        } : () => {
+            if (this.props.canisterStatus.every(status => status.configured)) {
+                this.props.saveConfig(this.props.canisterStatus);
+            }
         };
         // Render a canister view for each canister
-        const canisters = (() => {
-            var render = [];
-            for (i = 0; i < num_canisters; i++) {
-                render.push(<Canister index={i} key={i}/>)
-            }
-            return (this.props.isCanisterStatusLoading || this.props.isIngredientsLoading)?<AppText>Loading...</AppText>:render;
-        })();
+        var canisters = [];
+        for (i = 0; i < num_canisters; i++) {
+            canisters.push({'index':i,'key':i})
+        }
+        let canister_render = (this.props.isCanisterStatusLoading || this.props.isIngredientsLoading) ?
+            <AppText>Loading...</AppText> :
+            <FlatList
+                refreshControl={
+                    <RefreshControl
+                        refreshing={this.state.refreshing}
+                        onRefresh={this._onRefresh.bind(this)}
+                    />
+                }
+                style = {styles.canister_list}
+                data={canisters}
+                renderItem={({item}) => (
+                    <Canister index={item.index} key={item.index}/>
+                )
+                }>
+            </FlatList>;
         // Render the canisters and a button to navigate to recipe selection
         return (<View style={styles.container}>
             <View style={styles.canisters_view}>
-                {canisters}
+                {canister_render}
             </View>
             <TouchableOpacity
                 style={styles.select_recipe_button}
@@ -58,8 +83,8 @@ export class Status extends Component<{}> {
 const mapDispatchToProps = (dispatch) => {
     return {
         loadStatus: () => dispatch(updateCanisters()),
-        loadIngredients:()=>dispatch(loadIngredients()),
-        saveConfig:(status)=>dispatch(saveConfig(status))
+        loadIngredients: () => dispatch(loadIngredients()),
+        saveConfig: (status) => dispatch(saveConfig(status))
     };
 };
 
@@ -69,9 +94,9 @@ const mapStateToProps = (state) => {
         isCanisterStatusLoading: state.canisterStatusReducer.canisterLoading,
         isIngredientsLoading: state.ingredientReducer.ingredientsLoading,
         canisterStatus: state.canisterStatusReducer.status,
-        canisterConfigComplete:state.canisterStatusReducer.configComplete,
-        ingredients:state.ingredientReducer.ingredients,
-        configSaving:state.canisterStatusReducer.configSaving
+        canisterConfigComplete: state.canisterStatusReducer.configComplete,
+        ingredients: state.ingredientReducer.ingredients,
+        configSaving: state.canisterStatusReducer.configSaving
     };
 };
 // Invoke links between component and Redux store
@@ -82,6 +107,10 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         backgroundColor: 'grey'
+    },
+    canister_list:{
+        flex:1,
+        flexDirection:'column'
     },
     canisters_view: {
         flex: 7

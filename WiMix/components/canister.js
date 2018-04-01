@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         marginTop: 10,
         marginBottom: 10,
-        flex: 1,
+        height: 150,
         flexDirection: 'row'
     }
 });
