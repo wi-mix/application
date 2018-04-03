@@ -16,12 +16,11 @@ const num_canisters = 3;
 export class Status extends Component<{}> {
     constructor(props) {
         super(props);
-        this.state = {
-            refreshing: false,
-        };
+
     }
     componentWillMount() {
-        this.props.loadStatus();
+        this.setState({refreshing:true});
+        this.props.loadStatus().then(()=>this.setState({refreshing:false}));
         this.props.loadIngredients();
     }
     _onRefresh() {
@@ -46,8 +45,7 @@ export class Status extends Component<{}> {
         for (i = 0; i < num_canisters; i++) {
             canisters.push({'index':i,'key':i})
         }
-        let canister_render = (this.props.isCanisterStatusLoading || this.props.isIngredientsLoading) ?
-            <AppText>Loading...</AppText> :
+        let canister_render =
             <FlatList
                 refreshControl={
                     <RefreshControl
@@ -56,7 +54,7 @@ export class Status extends Component<{}> {
                     />
                 }
                 style = {styles.canister_list}
-                data={canisters}
+                data={(this.props.isCanisterStatusLoading || this.props.isIngredientsLoading)?null:canisters}
                 renderItem={({item}) => (
                     <Canister index={item.index} key={item.index}/>
                 )

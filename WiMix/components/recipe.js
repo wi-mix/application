@@ -63,7 +63,7 @@ export class Recipe extends Component<{}> {
                     if(this.state.editable){
                         this.props.saveNewRecipe(this.props.recipe);
                     }
-                    this.props.makeRecipe(this.props.recipe);
+                    this.props.makeRecipe(this.props.recipe,this.props.available);
                     this.props.navigation.popToTop();
                 }}>
                 <WiMixButtonText>Make it!</WiMixButtonText>
@@ -77,7 +77,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         updateName: (name) => dispatch(setCustomRecipeName(name)),
         updateDescription: (desc) => dispatch(setCustomRecipeDescription(desc)),
-        makeRecipe: (recipe) => dispatch(makeRecipe(recipe)),
+        makeRecipe: (recipe,available) => dispatch(makeRecipe(recipe,available)),
         saveNewRecipe: (recipe)=> dispatch(saveRecipe(recipe))
     };
 };
@@ -102,10 +102,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     recipe_name: {
-        fontSize: responsiveFontSize(5),
+        fontSize: responsiveFontSize(4),
         fontFamily:'ProductSansBold',
         color:'black',
-        flex:1
+        flex:1,
 
     },
     recipe_description: {

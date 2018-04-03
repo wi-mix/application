@@ -108,7 +108,6 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             }
             // If ingredient is already present update its amount
             else if (state.selected.ingredients.some(ingredient=>ingredient.key === updated_ingredient.key)){
-                console.log("Update ingredient ",updated_ingredient);
                 return Object.assign({},state,{
                     selected:Object.assign({},state.selected,{
                         ingredients:state.selected.ingredients.map(ingredient=>{

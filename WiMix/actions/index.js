@@ -180,7 +180,7 @@ export function getRecipeSuccess(recipes) {
     }
 }
 
-export function canisterConfigComplete(){
+export function canisterConfigComplete() {
     return {
         type: CANISTER_CONFIG_COMPLETE
     }
@@ -194,12 +194,13 @@ export function saveRecipe(recipe) {
 }
 
 
-export function makeRecipe(recipe) {
+export function makeRecipe(recipe,available) {
     return (dispatch) => {
-        let ingredients = recipe.ingredients.map((ingredient,index)=>{
-           return {'amount':Math.round(ingredient.amount),'order':index}
+        let ingredients = available.map((ingredient) => {
+            let active_ingredient = recipe.ingredients.find((required_ingredient)=>required_ingredient.key === ingredient.key);
+            return active_ingredient!=null?{'amount': Math.round(active_ingredient.amount), 'order': active_ingredient.order!=null?active_ingredient.order:0}:{'amount':0,'order':0}
         });
-        let post_object = {'ingredients':ingredients};
+        let post_object = {'ingredients': ingredients};
         console.log(post_object);
         fetch('http://'+BOARD_IP+'/dispense', {
             method: 'POST',
@@ -274,7 +275,6 @@ export function loadIngredients() {
 
 export function getRecipes(keys) {
     return (dispatch) => {
-        console.log("Fetching recipes");
         dispatch(updatingRecipe(true));
         fetch('http://wimix.tech/api/recipes/drinks', {
             method: 'POST',
@@ -301,7 +301,7 @@ function findBoardIP(dispatch) {
     socket.bind(12345);
     socket.on('message', function (msg, rinfo) {
         console.log(msg);
-        msg = Array.from(msg).map(val=>String.fromCharCode(val)).join("");
+        msg = Array.from(msg).map(val => String.fromCharCode(val)).join("");
         console.log(msg);
         if (msg.startsWith("g5:")) {
             BOARD_IP = msg.split("g5:")[1];

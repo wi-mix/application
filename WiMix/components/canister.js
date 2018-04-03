@@ -4,6 +4,7 @@ import React from "react";
 import {connect} from "react-redux";
 import {AppText} from "./wimix_text";
 import {updateCanisterSuccess} from "../actions";
+import {responsiveFontSize} from "react-native-responsive-dimensions";
 
 /*
     Author: Harley Vanselow
@@ -33,6 +34,7 @@ export class Canister extends Component<{}> {
             .map(ingredient => {
                 return <Picker.Item label={ingredient.name} value={ingredient.name} key={ingredient.key}/>
             });
+        ingredient_choices.unshift(<Picker.Item label ={'Choose ingredient!'} value ={'Choose ingredient!'} key ={0}/>);
         return (
             // Display volume remaining
             <View style={styles.canister_status_view}>
@@ -44,9 +46,11 @@ export class Canister extends Component<{}> {
                         Displays all possible ingredients for base station setup
                      */}
                     <Picker
+                        style={styles.available_ingredient}
                         selectedValue = {this.state.specific_container.name}
                         enabled={this.state.editable}
                         onValueChange={(ingredientName) => {
+
                             let ingredient = this.props.ingredients.filter(ingredient=>ingredient.name === ingredientName)[0];
                             let updated_ingredient = Object.assign({}, ingredient, {
                                 amount: this.state.specific_container.amount,
@@ -63,7 +67,7 @@ export class Canister extends Component<{}> {
                         {ingredient_choices}
 
                     </Picker>
-                    <AppText>
+                    <AppText style={styles.amount_remaining_text}>
                         {'\n'}
                         {this.state.specific_container.amount}mL
                         remaining
@@ -93,9 +97,8 @@ function mapDispatchToProps(dispatch) {
 
 const styles = StyleSheet.create({
     recipe_info_text: {
-        // fontSize: responsiveFontSize(5),
-        flex: .6,
-        paddingLeft: 10,
+        flex:1,
+        paddingLeft:10
     },
     canister_status_view: {
         backgroundColor: 'white',
@@ -103,6 +106,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         height: 150,
         flexDirection: 'row'
+    },
+    amount_remaining_text:{
+        fontSize:responsiveFontSize(3),
+        paddingBottom:15,
+    },
+    available_ingredient:{
+        flex:1,
     }
 });
 // Invoke links between component and Redux store
