@@ -1,3 +1,5 @@
+import * as ToastAndroid from "react-native/Libraries/Components/ToastAndroid/ToastAndroid.android";
+
 export const CANISTER_UPDATING = 'CANISTER_UPDATING';
 export const RECIPE_UPDATING = 'RECIPE_UPDATING';
 export const UPDATE_CANISTER_SUCCESS = 'UPDATE_CANISTER_SUCCESS';
@@ -12,8 +14,8 @@ export const SET_SELECTED_NAME = 'SET_SELECTED_NAME';
 export const SET_SELECTED_DESCRIPTION = 'SET_SELECTED_DESCRIPTION';
 export const LOAD_INGREDIENTS = 'LOAD_INGREDIENTS';
 export const LOAD_INGREDIENTS_SUCCESS = 'LOAD_INGREDIENTS_SUCCESS';
-export const SAVE_CONFIG_SUCCESS = 'SAVE_CONFIG_SUCCESS';
-export const CANISTER_CONFIG_COMPLETE = 'CANISTER_CONFIG_COMPLETE';
+export const CANISTER_CONFIG_STATUS = 'CANISTER_CONFIG_STATUS';
+export const POUR_REQUEST_SUCCESS = 'POUR_REQUEST_SUCCESS';
 let BOARD_IP = "";
 
 /*
@@ -68,7 +70,8 @@ const fake_recipe_data = [{
     "ordered": true
 }];
 
-const fake_status_data = {'ingredients':[
+const fake_status_data = {
+    'ingredients': [
         {
             "amount": 200,
             // "name": "Vodka",
@@ -90,7 +93,7 @@ const fake_status_data = {'ingredients':[
             // "key": 66,
             // "zobristKey": -3458659697403095153
         }]
-    };
+};
 
 
 export function clearRecipe() {
@@ -151,12 +154,6 @@ export function savingConfig(saving) {
     }
 }
 
-export function canisterConfigSuccess() {
-    return {
-        type: SAVE_CONFIG_SUCCESS
-    }
-}
-
 export function loadIngredientsSuccess(ingredients) {
     return {
         type: LOAD_INGREDIENTS_SUCCESS,
@@ -172,7 +169,12 @@ export function updateCanisterSuccess(status) {
         status,
     };
 }
-
+export function pourRequestStatus(status) {
+    return {
+        type: POUR_REQUEST_SUCCESS,
+        status
+    }
+}
 export function getRecipeSuccess(recipes) {
     return {
         type: GET_RECIPE_SUCCESS,
@@ -180,9 +182,10 @@ export function getRecipeSuccess(recipes) {
     }
 }
 
-export function canisterConfigComplete() {
+export function canisterConfigStatus(status) {
     return {
-        type: CANISTER_CONFIG_COMPLETE
+        type: CANISTER_CONFIG_STATUS,
+        status
     }
 }
 
@@ -194,15 +197,19 @@ export function saveRecipe(recipe) {
 }
 
 
-export function makeRecipe(recipe,available) {
+export function makeRecipe(recipe, available) {
     return (dispatch) => {
-        let ingredients = available.map((ingredient) => {
-            let active_ingredient = recipe.ingredients.find((required_ingredient)=>required_ingredient.key === ingredient.key);
-            return active_ingredient!=null?{'amount': Math.round(active_ingredient.amount), 'order': active_ingredient.order!=null?active_ingredient.order:0}:{'amount':0,'order':0}
+        let ingredients = available.map((ingredient,index) => {
+            let active_ingredient = recipe.ingredients.find((required_ingredient) => required_ingredient.key === ingredient.key);
+            return active_ingredient != null ? {
+                'amount': Math.round(active_ingredient.amount),
+                'order': active_ingredient.order != null ? active_ingredient.order : index
+            } : {'amount': 0, 'order': 0}
         });
         let post_object = {'ingredients': ingredients};
         console.log(post_object);
-        fetch('http://'+BOARD_IP+'/dispense', {
+        dispatch(pourRequestStatus(false));
+        return fetch('http://' + BOARD_IP + '/dispense', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -210,14 +217,15 @@ export function makeRecipe(recipe,available) {
             },
             body: JSON.stringify(post_object),
         }).catch((error) => {
-            // Handle http 409 error (dispenser is busy)
-            console.error(error);
+            console.log("Encountered error");
         }).then(response => {
             if (response.ok) {
                 console.log("Pour request successful");
-                dispatch(canisterConfigSuccess());
-            }else{
-                console.error(response)
+                ToastAndroid.show("Dispensing!", ToastAndroid.SHORT);
+                dispatch(pourRequestStatus(true))
+            } else if (response.status === 409) {
+                console.log("Wi-mix busy");
+                ToastAndroid.show("The Wi-Mix is busy! Try again soon", ToastAndroid.SHORT);
             }
         })
     }
@@ -237,7 +245,7 @@ export function saveConfig(status) {
             return {"key": canister.key, "name": canister.name}
         });
         let post_body = {'ingredients': basic_status};
-        fetch('http://'+BOARD_IP+'/ingredients', {
+        fetch('http://' + BOARD_IP + '/ingredients', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -249,7 +257,9 @@ export function saveConfig(status) {
         }).then(response => {
             if (response.ok) {
                 console.log("Canister config success");
-                dispatch(canisterConfigSuccess());
+                dispatch(canisterConfigStatus(true));
+                dispatch(savingConfig(false));
+                dispatch(getRecipeSuccess(null))// Invalidate saved recipes
             }
         })
     }
@@ -289,30 +299,35 @@ export function getRecipes(keys) {
             .then(response => response.json())
             .then(recipe_json => {
                 console.log("Completed fetching recipes");
+                console.log(keys);
+                console.log(recipe_json);
                 dispatch(getRecipeSuccess(recipe_json))
             });
     }
 }
 
 function findBoardIP(dispatch) {
-    console.log("Searching for board...");
-    const dgram = require('dgram');
-    const socket = dgram.createSocket('udp4');
-    socket.bind(12345);
-    socket.on('message', function (msg, rinfo) {
-        console.log(msg);
-        msg = Array.from(msg).map(val => String.fromCharCode(val)).join("");
-        console.log(msg);
-        if (msg.startsWith("g5:")) {
-            BOARD_IP = msg.split("g5:")[1];
-            console.log("Board IP: ", BOARD_IP);
-            socket.close();
-            callBoard(dispatch);
-        }
+    return new Promise(function (resolve, reject) {
+        console.log("Scanning for board...");
+        const dgram = require('dgram');
+        const socket = dgram.createSocket('udp4');
+        socket.bind(12345);
+        socket.on('message', function (msg, rinfo) {
+            console.log(msg);
+            msg = Array.from(msg).map(val => String.fromCharCode(val)).join("");
+            console.log(msg);
+            if (msg.startsWith("g5:")) {
+                BOARD_IP = msg.split("g5:")[1];
+                console.log("Board IP: ", BOARD_IP);
+                socket.close();
+                callBoard(dispatch).then(()=>{resolve()});
+            }
+        });
     });
 }
 
 function callBoard(dispatch) {
+    console.log("Requesting canister update");
     let board_address = 'http://' + BOARD_IP + '/ingredients';
     return fetch(board_address, {
         method: 'GET',
@@ -325,10 +340,11 @@ function callBoard(dispatch) {
     })
         .then(response => response.json())
         .then(canister_status_json => {
+            console.log("Canister update actually complete");
             // canister_status_json = fake_status_data;
             let canister_data = canister_status_json['ingredients'];
-            if(canister_data.every(ingredient=>ingredient['name'])){
-                dispatch(canisterConfigComplete())
+            if (canister_data.every(ingredient => ingredient['name'])) {
+                dispatch(canisterConfigStatus(true))
             }
             dispatch(updateCanisterSuccess(canister_data))
         });
@@ -340,7 +356,7 @@ export function updateCanisters() {
     return (dispatch) => {
         dispatch(updatingCanister(true));
         if (BOARD_IP === "") {
-            findBoardIP(dispatch);
+            return findBoardIP(dispatch);
         } else {
             return callBoard(dispatch);
         }

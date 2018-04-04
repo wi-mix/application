@@ -3,7 +3,7 @@ import {Picker, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {connect} from "react-redux";
 import {AppText} from "./wimix_text";
-import {updateCanisterSuccess} from "../actions";
+import {canisterConfigStatus, updateCanisterSuccess} from "../actions";
 import {responsiveFontSize} from "react-native-responsive-dimensions";
 
 /*
@@ -48,13 +48,11 @@ export class Canister extends Component<{}> {
                     <Picker
                         style={styles.available_ingredient}
                         selectedValue = {this.state.specific_container.name}
-                        enabled={this.state.editable}
                         onValueChange={(ingredientName) => {
-
+                            this.props.setCanisterConfigStatus(false);
                             let ingredient = this.props.ingredients.filter(ingredient=>ingredient.name === ingredientName)[0];
                             let updated_ingredient = Object.assign({}, ingredient, {
-                                amount: this.state.specific_container.amount,
-                                configured: true
+                                amount: this.state.specific_container.amount
                             });
                             this.setState({
                               specific_container:updated_ingredient
@@ -91,7 +89,8 @@ function mapStateToProps(state) {
 // Link component prop to make them able to dispatch action creators
 function mapDispatchToProps(dispatch) {
     return {
-        setCanisterStatus:(status)=>dispatch(updateCanisterSuccess(status))
+        setCanisterStatus:(status)=>dispatch(updateCanisterSuccess(status)),
+        setCanisterConfigStatus:(status)=>dispatch(canisterConfigStatus(status))
     };
 }
 

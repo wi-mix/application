@@ -16,11 +16,13 @@ const num_canisters = 3;
 export class Status extends Component<{}> {
     constructor(props) {
         super(props);
-
     }
     componentWillMount() {
         this.setState({refreshing:true});
-        this.props.loadStatus().then(()=>this.setState({refreshing:false}));
+        this.props.loadStatus().then(()=>{
+            console.log("Refresh done");
+            this.setState({refreshing:false})
+        });
         this.props.loadIngredients();
     }
     _onRefresh() {
@@ -36,7 +38,9 @@ export class Status extends Component<{}> {
         let ButtonAction = this.props.canisterConfigComplete ? () => {
             navigate('RecipeSelection')
         } : () => {
-            if (this.props.canisterStatus.every(status => status.configured)) {
+            console.log(this.props.canisterStatus);
+            if (this.props.canisterStatus.every(status => status.name!=='Choose ingredient!')) {
+                console.log('Saving configuration...');
                 this.props.saveConfig(this.props.canisterStatus);
             }
         };

@@ -1,10 +1,19 @@
 import { combineReducers } from 'redux';
 import {
-    CANISTER_CONFIG_COMPLETE,
-    CANISTER_UPDATING, DESELECT_RECIPE, GET_RECIPE_SUCCESS, LOAD_INGREDIENTS, LOAD_INGREDIENTS_SUCCESS, RECIPE_SELECTED,
-    RECIPE_UPDATING, SAVE_CONFIG_SUCCESS,
-    SAVE_RECIPE, SAVING_CONFIG,
-    SET_SELECTED_AMOUNT, SET_SELECTED_DESCRIPTION, SET_SELECTED_NAME,
+    CANISTER_CONFIG_STATUS,
+    CANISTER_UPDATING,
+    DESELECT_RECIPE,
+    GET_RECIPE_SUCCESS,
+    LOAD_INGREDIENTS,
+    LOAD_INGREDIENTS_SUCCESS,
+    POUR_REQUEST_SUCCESS,
+    RECIPE_SELECTED,
+    RECIPE_UPDATING,
+    SAVE_RECIPE,
+    SAVING_CONFIG,
+    SET_SELECTED_AMOUNT,
+    SET_SELECTED_DESCRIPTION,
+    SET_SELECTED_NAME,
     UPDATE_CANISTER_SUCCESS
 } from "../actions";
 /*
@@ -35,6 +44,7 @@ const canisterStatusReducer = (state = {status:[],canisterLoading:true,configCom
     switch(action.type){
         // Handle case for canister update success
         case SAVING_CONFIG:
+            console.log("Updating config saving status: ",action.saving);
             return Object.assign({},state,{
                 configSaving:action.saving
             });
@@ -43,13 +53,9 @@ const canisterStatusReducer = (state = {status:[],canisterLoading:true,configCom
                 status: action.status,
                 canisterLoading:false,
             });
-        case CANISTER_CONFIG_COMPLETE:
+        case CANISTER_CONFIG_STATUS:
             return Object.assign({},state,{
-               configComplete:true
-            });
-        case SAVE_CONFIG_SUCCESS:
-            return Object.assign({},state,{
-                configComplete:true
+               configComplete:action.status
             });
         // Handle case for canister update started
         case CANISTER_UPDATING:
@@ -136,6 +142,11 @@ const recipeReducer = (state = {recipeLoading:true},action)=>{
             keyed_recipe.key = state.recipes.length +1;
             return Object.assign({},state,{
                 recipes:[...state.recipes,keyed_recipe]
+            });
+
+        case POUR_REQUEST_SUCCESS:
+            return Object.assign({},state,{
+                pour_success:action.status
             });
         default:
             return state;

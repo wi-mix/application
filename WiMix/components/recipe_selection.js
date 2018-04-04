@@ -13,7 +13,7 @@ import {clearRecipe, getRecipes, selectRecipe} from "../actions";
  */
 export class RecipeSelection extends Component<{}> {
     componentWillMount(){
-        if (!this.props.recipes) {
+        if (this.props.recipes == null) {
             this.props.loadRecipes(this.props.available.map(ingredient => ingredient.zobristKey));
         }
     }
@@ -22,11 +22,6 @@ export class RecipeSelection extends Component<{}> {
     render() {
         const {navigate} = this.props.navigation;
         // If data is still being retrieved from the base station, indicate loading
-        if (this.props.isCanisterStatusLoading) {
-            return (
-                <Text>Loading...</Text>
-            )
-        }
         return (
             <View style={styles.container}>
                 <View style={styles.server_recipe_list}>
@@ -34,9 +29,9 @@ export class RecipeSelection extends Component<{}> {
                     Render list of recipes that can be made
                      */}
                     <FlatList
-                        data={this.props.recipes.filter(recipe=>recipe.ingredients.every(ingredient=>{
+                        data={this.props.recipes?this.props.recipes.filter(recipe=>recipe.ingredients.every(ingredient=>{
                             return ingredient.amount <= this.props.available.find(available=>available.key === ingredient.key).amount;
-                        }))}
+                        })):null}
                         renderItem={({item}) =>
                             <TouchableOpacity
                                 onPress={() => {

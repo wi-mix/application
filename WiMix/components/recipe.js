@@ -63,8 +63,11 @@ export class Recipe extends Component<{}> {
                     if(this.state.editable){
                         this.props.saveNewRecipe(this.props.recipe);
                     }
-                    this.props.makeRecipe(this.props.recipe,this.props.available);
-                    this.props.navigation.popToTop();
+                    this.props.makeRecipe(this.props.recipe,this.props.available).then(()=>{
+                        if(this.props.success){
+                            this.props.navigation.popToTop();
+                        }
+                    });
                 }}>
                 <WiMixButtonText>Make it!</WiMixButtonText>
             </TouchableOpacity></View>
@@ -84,6 +87,7 @@ const mapDispatchToProps = (dispatch) => {
 
 const mapStateToProps = (state) => {
     return {
+        success: state.recipeReducer.pour_success,
         recipe: state.recipeReducer.selected,
         available: state.canisterStatusReducer.status
     };
